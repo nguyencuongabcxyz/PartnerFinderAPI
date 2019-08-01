@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartnerFinder", "PartnerFinder\PartnerFinder.csproj", "{2E8C18D2-251E-4B6C-AEB4-91718EE73335}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartnerFinder", "PartnerFinder\PartnerFinder.csproj", "{2E8C18D2-251E-4B6C-AEB4-91718EE73335}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{F32AF3C4-6C95-4952-BE18-91C1B55FBDD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{0E699B4A-2CAE-4A64-B718-7609B311F5BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{2E8C18D2-251E-4B6C-AEB4-91718EE73335}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E8C18D2-251E-4B6C-AEB4-91718EE73335}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E8C18D2-251E-4B6C-AEB4-91718EE73335}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F32AF3C4-6C95-4952-BE18-91C1B55FBDD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F32AF3C4-6C95-4952-BE18-91C1B55FBDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F32AF3C4-6C95-4952-BE18-91C1B55FBDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F32AF3C4-6C95-4952-BE18-91C1B55FBDD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E699B4A-2CAE-4A64-B718-7609B311F5BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E699B4A-2CAE-4A64-B718-7609B311F5BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E699B4A-2CAE-4A64-B718-7609B311F5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E699B4A-2CAE-4A64-B718-7609B311F5BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
