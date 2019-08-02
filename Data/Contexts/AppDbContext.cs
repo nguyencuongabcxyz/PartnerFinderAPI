@@ -20,5 +20,13 @@ namespace Data.Contexts
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<UserInformation> UserInformations { get; set; }
+        public DbSet<PartnerRequest> RequestPartners { get; set; }
+        public DbSet<FindingPartnerUser> FindingPartnerUsers { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Partnership> Partnerships { get; set; }
+        public DbSet<BlockedRelation> BlockedRelations { get; set; }
+        public DbSet<LevelTest> LevelTests { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<AnswerOption> AnswerOptions { get; set; }
     }
 }
