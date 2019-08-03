@@ -4,14 +4,16 @@ using Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190803042412_ModifyMessageTable")]
+    partial class ModifyMessageTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,18 +180,15 @@ namespace Data.Migrations
                     b.Property<string>("Content")
                         .IsRequired();
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .IsRequired();
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("CreatorId")
-                        .IsRequired();
+                    b.Property<string>("CreatorId");
 
                     b.Property<bool?>("IsDeleted");
 
                     b.Property<bool?>("IsViewed");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired();
+                    b.Property<string>("OwnerId");
 
                     b.Property<int?>("PostId");
 
@@ -215,7 +214,7 @@ namespace Data.Migrations
                     b.Property<string>("Content")
                         .IsRequired();
 
-                    b.Property<DateTime?>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<bool?>("IsAccepted");
 
@@ -223,11 +222,9 @@ namespace Data.Migrations
 
                     b.Property<bool?>("IsViewed");
 
-                    b.Property<string>("ReceiverId")
-                        .IsRequired();
+                    b.Property<string>("ReceiverId");
 
-                    b.Property<string>("SenderId")
-                        .IsRequired();
+                    b.Property<string>("SenderId");
 
                     b.HasKey("Id");
 
@@ -244,15 +241,13 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<bool?>("IsDeleted");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired();
+                    b.Property<string>("OwnerId");
 
-                    b.Property<string>("PartnerId")
-                        .IsRequired();
+                    b.Property<string>("PartnerId");
 
                     b.HasKey("Id");
 
@@ -271,7 +266,7 @@ namespace Data.Migrations
 
                     b.Property<string>("Audio");
 
-                    b.Property<DateTime?>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<string>("Image");
 
@@ -286,10 +281,9 @@ namespace Data.Migrations
 
                     b.Property<int>("Type");
 
-                    b.Property<DateTime?>("UpdatedDate");
+                    b.Property<DateTime>("UpdatedDate");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
@@ -320,7 +314,7 @@ namespace Data.Migrations
 
                     b.Property<int>("Type");
 
-                    b.Property<DateTime?>("UpdatedDate");
+                    b.Property<DateTime>("UpdatedDate");
 
                     b.HasKey("Id");
 
@@ -337,7 +331,7 @@ namespace Data.Migrations
 
                     b.Property<string>("Avatar");
 
-                    b.Property<DateTime?>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<string>("Hobbies");
 
@@ -351,7 +345,7 @@ namespace Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<DateTime?>("UpdatedDate");
+                    b.Property<DateTime>("UpdatedDate");
 
                     b.Property<string>("Video");
 
@@ -611,13 +605,11 @@ namespace Data.Migrations
                 {
                     b.HasOne("Data.Models.ApplicationUser", "Creator")
                         .WithMany("NotificationsAsCreator")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CreatorId");
 
                     b.HasOne("Data.Models.ApplicationUser", "Owner")
                         .WithMany("Notifications")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("OwnerId");
 
                     b.HasOne("Data.Models.Post", "Post")
                         .WithMany("Notifications")
@@ -627,35 +619,30 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Models.PartnerRequest", b =>
                 {
                     b.HasOne("Data.Models.ApplicationUser", "Receiver")
-                        .WithMany("ReceivedPartnerRequests")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("ReceivedRequestPartners")
+                        .HasForeignKey("ReceiverId");
 
                     b.HasOne("Data.Models.ApplicationUser", "Sender")
-                        .WithMany("SentPartnerRequests")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany("SentRequestPartners")
+                        .HasForeignKey("SenderId");
                 });
 
             modelBuilder.Entity("Data.Models.Partnership", b =>
                 {
                     b.HasOne("Data.Models.ApplicationUser", "Owner")
                         .WithMany("Partnerships")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("OwnerId");
 
                     b.HasOne("Data.Models.ApplicationUser", "Partner")
                         .WithMany("PartnershipsAsPartner")
-                        .HasForeignKey("PartnerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PartnerId");
                 });
 
             modelBuilder.Entity("Data.Models.Post", b =>
                 {
                     b.HasOne("Data.Models.ApplicationUser", "User")
                         .WithMany("Posts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Data.Models.Question", b =>

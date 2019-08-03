@@ -9,12 +9,12 @@ namespace Data.Models
     public class Partnership
     {
         public int Id { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public bool IsDeleted { get; set; }
-        [ForeignKey("Owner")]
+        public DateTime? CreatedDate { get; set; }
+        public bool? IsDeleted { get; set; }
+        [Required]
         public string OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
-        [ForeignKey("Partner")]
+        [Required]
         public string PartnerId { get; set; }
         public ApplicationUser Partner { get; set; }
     }

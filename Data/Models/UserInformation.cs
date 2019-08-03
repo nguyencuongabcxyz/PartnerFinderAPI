@@ -21,8 +21,8 @@ namespace Data.Models
         public string Introduction { get; set; }
         public string VoiceAudio { get; set; }
         public string Video { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
         public ApplicationUser User { get; set; }
     }
 }

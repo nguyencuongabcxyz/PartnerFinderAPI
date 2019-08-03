@@ -19,9 +19,9 @@ namespace Data.Models
 
         //RequestPartner relationship
         [InverseProperty("Sender")]
-        public ICollection<PartnerRequest> SentRequestPartners { get; set; }
+        public ICollection<PartnerRequest> SentPartnerRequests { get; set; }
         [InverseProperty("Receiver")]
-        public ICollection<PartnerRequest> ReceivedRequestPartners { get; set; }
+        public ICollection<PartnerRequest> ReceivedPartnerRequests { get; set; }
 
         //Partnership relationship
         [InverseProperty("Owner")]
@@ -40,6 +40,12 @@ namespace Data.Models
         public ICollection<BlockedRelation> BlockedRelations { get; set; }
         [InverseProperty("BlockedUser")]                                     //this is for creating relation in DB not necessary for query
         public ICollection<BlockedRelation> BlockedRelationsAsBlockedUser { get; set; }
+
+        //Notification relationship
+        [InverseProperty("Owner")]
+        public ICollection<Notification> Notifications { get; set; }
+        [InverseProperty("Creator")]
+        public ICollection<Notification> NotificationsAsCreator { get; set; } //this is for creating relation in DB not necessary for query
 
     }
 }

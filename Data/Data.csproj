@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190803025359_DBHomeComputer.cs" />
+    <Compile Remove="Migrations\20190803025727_AddCommentTable.cs" />
+    <Compile Remove="Migrations\20190803025917_AddCommentTable.cs" />
+    <Compile Remove="Migrations\20190803034658_AddRequiredAnnotations.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Repositories\" />
   </ItemGroup>
 
