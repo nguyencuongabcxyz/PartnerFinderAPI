@@ -352,8 +352,9 @@ MigrationBackup/
 .ionide/
 .vs
 Debug/
-obj
+obj/
 */**/bin/Debug
 */**/bin/Release
 */**/obj/Debug
 */**/obj/Release
+*.cache
