@@ -15,8 +15,8 @@ namespace Data.Models
         public string Audio { get; set; }
         [Required]
         public string RightAnwser { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public bool? IsDeleted { get; set; }
+        public DateTime UpdatedDate { get; set; }
+        public bool IsDeleted { get; set; }
         public int TestId { get; set; }
         public LevelTest LevelTest { get; set; }
         public ICollection<AnswerOption> AnswerOptions { get; set; }

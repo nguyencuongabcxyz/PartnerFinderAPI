@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Service.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +24,11 @@ namespace PartnerFinder.Extensions
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
                     {
-                        var error = contextFeature.Error;
-                        await context.Response.WriteAsync(new ErrorDetails()
+                        var errorMessage = contextFeature.Error.Message;
+                        await context.Response.WriteAsync(new ErrorDetailDTO()
                         {
                             StatusCode = context.Response.StatusCode,
-                            Message = error;
+                            Message = errorMessage
                         }.ToString());
                     }
                 });

@@ -8,8 +8,8 @@ namespace Data.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public bool? IsActive { get; set; }
-        public bool? IsDeleted { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime CreateDate { get; set; }
         public UserInformation UserInformation { get; set; }
         public FindingPartnerUser FindingPartnerUser { get; set; }

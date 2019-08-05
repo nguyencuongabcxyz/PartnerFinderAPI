@@ -22,7 +22,9 @@ namespace Data.Repositories
 
         public async Task Add(T entity)
         {
+            entity.GetType().GetProperty("IsDeleted").SetValue(entity, true);
             await EntitiesSet.AddAsync(entity);
+            //entity.GetType().GetProperty("IsDeleted").SetValue(entity, false);
         }
 
         public async Task AddRange(IEnumerable<T> entities)

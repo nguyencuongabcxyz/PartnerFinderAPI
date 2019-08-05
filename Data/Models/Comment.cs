@@ -12,8 +12,8 @@ namespace Data.Models
         public string Content { get; set; }
         [Required]
         public int Type { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public bool? IsDeleted { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public bool IsDeleted { get; set; }
         public int? PostId { get; set; }
         public Post Post { get; set; }
         [Required]

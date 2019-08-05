@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Data.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using PartnerFinder.CustomFilters;
 using PartnerFinder.Extensions;
+using Service.Models;
+using Service.Services;
 
 namespace PartnerFinder
 {
@@ -30,13 +24,25 @@ namespace PartnerFinder
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureMvc();
-            var connectionString = Configuration.GetConnectionString("HomeComputer");
+
+            //Inject ApplicationSetting
+            services.Configure<ApplicationSetting>(Configuration.GetSection("ApplicationSettings"));
+
+            var connectionString = Configuration.GetConnectionString("CompanyComputer");
             services.ConfigureDbContext(connectionString);
+
             services.ConfigureCors();
+
             services.ConfigureIdentity();
-            var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"].ToString());
+
+            var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:Jwt_Secret"].ToString());
             services.ConfigureAuthenticationWithJwtBearer(key);
+
+            services.AddScoped<ValidateModelAttribute>();
+
             services.AddHttpContextAccessor();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, TokenService>();
             services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Repository", ServiceLifetime.Scoped);
             services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Service", ServiceLifetime.Scoped);
 
@@ -54,7 +60,7 @@ namespace PartnerFinder
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

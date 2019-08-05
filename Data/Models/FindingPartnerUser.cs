@@ -10,10 +10,10 @@ namespace Data.Models
     {
         [Key, ForeignKey(nameof(ApplicationUser))]
         public string UserId { get; set; }
-        public DateTime? PostedDate { get; set; }
+        public DateTime PostedDate { get; set; }
         [Required]
         public string Description { get; set; }
-        public bool? IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }
         public ApplicationUser User { get; set; }
     }
 }
