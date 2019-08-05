@@ -38,16 +38,21 @@ namespace PartnerFinder.Controllers
             return Ok("sádafwrew");
         }
 
-        [HttpPost]
-        [Route("Register")]
+        [HttpPost("CreateRole/{role}")]
+        public async Task<object> CreateRole(string role)
+        {
+            var result = await _authService.AddRole(role);
+            return Ok(result);
+        }
+
+        [HttpPost("Register")]
         public async Task<object> RegisterUser(UserDTO user)
         {
             var result = await _authService.RegisterUserAsUserRole(user);
             return Ok(result);
         }
 
-        [HttpPost]
-        [Route("Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginInfoDTO model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
@@ -61,7 +66,7 @@ namespace PartnerFinder.Controllers
                 return Forbid();
             }
             var token = await _tokenService.GenerateToken(user, _appSetting.Jwt_Secret);
-            return Ok(new { token, user });
+            return Ok(new { token });
         }
 
     }

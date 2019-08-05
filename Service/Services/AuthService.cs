@@ -13,6 +13,7 @@ namespace Service.Services
     {
         Task<object> RegisterUserAsUserRole(UserDTO user);
         Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password);
+        Task<object> AddRole(string roleName);
     }
     public class AuthService : IAuthService
     {
@@ -46,13 +47,20 @@ namespace Service.Services
             return result;
         }
 
+        public async Task<object> AddRole(string roleName)
+        {
+            IdentityRole role = new IdentityRole(roleName);
+            IdentityResult result = await _roleManager.CreateAsync(role);
+            return result;
+        }
+
         public async Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password)
         {
-            if (user == null || await _userManager.CheckPasswordAsync(user, password))
+            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
                 return AuthenticateUserResult.Invalid;
             }
-            if (user.IsActive == false)
+            if (user.IsBlocked == true)
             {
                 return AuthenticateUserResult.Blocked;
             }

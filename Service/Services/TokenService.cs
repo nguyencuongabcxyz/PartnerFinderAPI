@@ -36,7 +36,7 @@ namespace Service.Services
                     new Claim("userId", user.Id),
                     new Claim(options.ClaimsIdentity.RoleClaimType, role.FirstOrDefault()),
                 }),
-                Expires = new DateTime(0,0,0,0,100,0),
+                Expires = DateTime.UtcNow.AddMinutes(10000),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), SecurityAlgorithms.HmacSha256Signature)
             };
             var tokenHandler = new JwtSecurityTokenHandler();

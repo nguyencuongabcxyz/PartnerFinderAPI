@@ -28,7 +28,7 @@ namespace PartnerFinder
             //Inject ApplicationSetting
             services.Configure<ApplicationSetting>(Configuration.GetSection("ApplicationSettings"));
 
-            var connectionString = Configuration.GetConnectionString("CompanyComputer");
+            var connectionString = Configuration.GetConnectionString("HomeComputer");
             services.ConfigureDbContext(connectionString);
 
             services.ConfigureCors();
@@ -62,6 +62,7 @@ namespace PartnerFinder
             }
             app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
