@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190803041732_ModifyCommentTable")]
-    partial class ModifyCommentTable
+    [Migration("20190806012216_UpdateCompanyDb")]
+    partial class UpdateCompanyDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,7 +30,7 @@ namespace Data.Migrations
                     b.Property<string>("Content")
                         .IsRequired();
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int>("QuestionId");
 
@@ -50,9 +50,9 @@ namespace Data.Migrations
                     b.Property<string>("BlockedUserId")
                         .IsRequired();
 
-                    b.Property<DateTime?>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("OwnerId")
                         .IsRequired();
@@ -75,7 +75,9 @@ namespace Data.Migrations
                     b.Property<string>("Content")
                         .IsRequired();
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int?>("ParentId");
 
@@ -104,7 +106,7 @@ namespace Data.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<DateTime>("PostedDate");
 
@@ -121,7 +123,7 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int>("QuestionNumber");
 
@@ -148,15 +150,17 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
-                    b.Property<bool?>("IsSent");
+                    b.Property<bool>("IsSent");
 
-                    b.Property<bool?>("IsViewed");
+                    b.Property<bool>("IsViewed");
 
-                    b.Property<string>("ReceiverId");
+                    b.Property<string>("ReceiverId")
+                        .IsRequired();
 
-                    b.Property<string>("SenderId");
+                    b.Property<string>("SenderId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -178,13 +182,15 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("CreatorId");
+                    b.Property<string>("CreatorId")
+                        .IsRequired();
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
-                    b.Property<bool?>("IsViewed");
+                    b.Property<bool>("IsViewed");
 
-                    b.Property<string>("OwnerId");
+                    b.Property<string>("OwnerId")
+                        .IsRequired();
 
                     b.Property<int?>("PostId");
 
@@ -212,15 +218,17 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<bool?>("IsAccepted");
+                    b.Property<bool>("IsAccepted");
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
-                    b.Property<bool?>("IsViewed");
+                    b.Property<bool>("IsViewed");
 
-                    b.Property<string>("ReceiverId");
+                    b.Property<string>("ReceiverId")
+                        .IsRequired();
 
-                    b.Property<string>("SenderId");
+                    b.Property<string>("SenderId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -239,11 +247,13 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
-                    b.Property<string>("OwnerId");
+                    b.Property<string>("OwnerId")
+                        .IsRequired();
 
-                    b.Property<string>("PartnerId");
+                    b.Property<string>("PartnerId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -266,9 +276,9 @@ namespace Data.Migrations
 
                     b.Property<string>("Image");
 
-                    b.Property<bool?>("IsClosed");
+                    b.Property<bool>("IsClosed");
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Script");
 
@@ -279,7 +289,8 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("UpdatedDate");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -299,7 +310,7 @@ namespace Data.Migrations
                     b.Property<string>("Content")
                         .IsRequired();
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int?>("LevelTestId");
 
@@ -323,7 +334,7 @@ namespace Data.Migrations
                 {
                     b.Property<string>("UserId");
 
-                    b.Property<int?>("Age");
+                    b.Property<int>("Age");
 
                     b.Property<string>("Avatar");
 
@@ -333,7 +344,7 @@ namespace Data.Migrations
 
                     b.Property<string>("Introduction");
 
-                    b.Property<int?>("Level");
+                    b.Property<int>("Level");
 
                     b.Property<string>("Location")
                         .IsRequired();
@@ -524,9 +535,9 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("CreateDate");
 
-                    b.Property<bool?>("IsActive");
+                    b.Property<bool>("IsBlocked");
 
-                    b.Property<bool?>("IsDeleted");
+                    b.Property<bool>("IsDeleted");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
@@ -588,22 +599,26 @@ namespace Data.Migrations
                 {
                     b.HasOne("Data.Models.ApplicationUser", "Receiver")
                         .WithMany("ReceivedMessages")
-                        .HasForeignKey("ReceiverId");
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Data.Models.ApplicationUser", "Sender")
                         .WithMany("SentMessages")
-                        .HasForeignKey("SenderId");
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Data.Models.Notification", b =>
                 {
                     b.HasOne("Data.Models.ApplicationUser", "Creator")
                         .WithMany("NotificationsAsCreator")
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Data.Models.ApplicationUser", "Owner")
                         .WithMany("Notifications")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Data.Models.Post", "Post")
                         .WithMany("Notifications")
@@ -613,30 +628,35 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Models.PartnerRequest", b =>
                 {
                     b.HasOne("Data.Models.ApplicationUser", "Receiver")
-                        .WithMany("ReceivedRequestPartners")
-                        .HasForeignKey("ReceiverId");
+                        .WithMany("ReceivedPartnerRequests")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Data.Models.ApplicationUser", "Sender")
-                        .WithMany("SentRequestPartners")
-                        .HasForeignKey("SenderId");
+                        .WithMany("SentPartnerRequests")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Data.Models.Partnership", b =>
                 {
                     b.HasOne("Data.Models.ApplicationUser", "Owner")
                         .WithMany("Partnerships")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Data.Models.ApplicationUser", "Partner")
                         .WithMany("PartnershipsAsPartner")
-                        .HasForeignKey("PartnerId");
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Data.Models.Post", b =>
                 {
                     b.HasOne("Data.Models.ApplicationUser", "User")
                         .WithMany("Posts")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Data.Models.Question", b =>

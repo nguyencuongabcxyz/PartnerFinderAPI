@@ -5,15 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190803025359_DBHomeComputer.cs" />
-    <Compile Remove="Migrations\20190803025727_AddCommentTable.cs" />
-    <Compile Remove="Migrations\20190803025917_AddCommentTable.cs" />
-    <Compile Remove="Migrations\20190803034658_AddRequiredAnnotations.cs" />
-    <Compile Remove="Migrations\20190805081752_TestDefaultValues.cs" />
-    <Compile Remove="Migrations\20190805143435_HomeDbMigration.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
