@@ -7,10 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace PartnerFinder.Extensions
 {
@@ -30,19 +28,15 @@ namespace PartnerFinder.Extensions
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(
                    options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                );
-        }
-
-        public static void ConfigureCors(this IServiceCollection services)
-        {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials());
-            });
+                )
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
+                    options.InvalidModelStateResponseFactory = context => new BadRequestObjectResult(context.ModelState)
+                    {
+                        ContentTypes = { "application/problem+json" }
+                    };
+                });
         }
 
         public static void ConfigureIdentity(this IServiceCollection services)
@@ -72,7 +66,7 @@ namespace PartnerFinder.Extensions
             {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = false;
-                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),

@@ -1,9 +1,7 @@
-﻿using Data.Contexts;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -11,20 +9,16 @@ namespace Data.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        private AppDbContext _appDbContext;
         protected DbSet<T> EntitiesSet;
 
-        public BaseRepository(AppDbContext appDbContext)
+        public BaseRepository(DbContext appDbContext)
         {
-            _appDbContext = appDbContext;
-            EntitiesSet = _appDbContext.Set<T>();
+            EntitiesSet = appDbContext.Set<T>();
         }
 
         public async Task Add(T entity)
         {
-            entity.GetType().GetProperty("IsDeleted").SetValue(entity, true);
             await EntitiesSet.AddAsync(entity);
-            //entity.GetType().GetProperty("IsDeleted").SetValue(entity, false);
         }
 
         public async Task AddRange(IEnumerable<T> entities)
@@ -32,7 +26,7 @@ namespace Data.Repositories
             await EntitiesSet.AddRangeAsync(entities);
         }
 
-        public virtual async Task<T> GetOne<U>(U id)
+        public virtual async Task<T> GetOne<TU>(TU id)
         {
             return await EntitiesSet.FindAsync(id);
         }
@@ -44,12 +38,12 @@ namespace Data.Repositories
 
         public virtual async Task<T> GetOneByCondition(Expression<Func<T, bool>> expression)
         {
-            return await EntitiesSet.Where<T>(expression).FirstOrDefaultAsync();
+            return await EntitiesSet.Where(expression).FirstOrDefaultAsync();
         }
 
         public virtual async Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> expression)
         {
-            return await EntitiesSet.Where<T>(expression).ToListAsync();
+            return await EntitiesSet.Where(expression).ToListAsync();
         }
         public void Remove(T entity)
         {
