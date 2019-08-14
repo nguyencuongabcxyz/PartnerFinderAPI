@@ -35,6 +35,8 @@ namespace PartnerFinder
             var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JwtSecret"]);
             services.ConfigureAuthenticationWithJwtBearer(key);
 
+            services.ConfigureMapper();
+
             services.AddCors();
 
             services.AddHttpContextAccessor();
@@ -57,8 +59,10 @@ namespace PartnerFinder
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            //app.ConfigureExceptionHandler();
-            //app.UseHttpsRedirection();
+
+            app.ConfigureExceptionHandler();
+            app.UseHttpsRedirection();
+
             string[] origins =
             {
                 Configuration["ApplicationSettings:ClientUrl"],
