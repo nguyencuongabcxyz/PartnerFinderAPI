@@ -21,7 +21,7 @@ namespace PartnerFinder.Extensions
                     if (contextFeature != null)
                     {
                         var errorMessage = contextFeature.Error.Message;
-                        await context.Response.WriteAsync(new ErrorDetailDTO()
+                        await context.Response.WriteAsync(new ErrorDetailDto()
                         {
                             StatusCode = context.Response.StatusCode,
                             Message = errorMessage

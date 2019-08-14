@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Service.Models
 {
-    public class LoginInfoDTO
+    public class LoginInfoDto
     {
         [Required]
         [MinLength(4)]

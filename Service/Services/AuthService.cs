@@ -1,7 +1,6 @@
 ﻿using Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Service.Constants;
-using Service.Models;
 using System.Threading.Tasks;
 
 namespace Service.Services

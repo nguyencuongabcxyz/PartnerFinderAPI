@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Service.Models
 {
-    public class ErrorDetailDTO
+    public class ErrorDetailDto
     {
         public int StatusCode { get; set; }
         public string Message { get; set; }

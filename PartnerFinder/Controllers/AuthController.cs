@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Data.Models;
 using Microsoft.AspNetCore.Identity;
@@ -51,7 +48,7 @@ namespace PartnerFinder.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<object> RegisterUser(UserDTO userDto)
+        public async Task<object> RegisterUser(UserDto userDto)
         {
             var user = _mapper.Map<ApplicationUser>(userDto);
             var result = await _authService.RegisterUserAsUserRole(user, userDto.Password);
@@ -59,10 +56,10 @@ namespace PartnerFinder.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginInfoDTO model)
+        public async Task<IActionResult> Login(LoginInfoDto loginInfoDto)
         {
-            var user = await _userManager.FindByNameAsync(model.UserName);
-            var result = await _authService.AuthenticateUser(user, model.Password);
+            var user = await _userManager.FindByNameAsync(loginInfoDto.UserName);
+            var result = await _authService.AuthenticateUser(user, loginInfoDto.Password);
             switch (result)
             {
                 case AuthenticateUserResult.Invalid:

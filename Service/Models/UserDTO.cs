@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Service.Models
 {
-    public class UserDTO
+    public class UserDto
     {
         [Required]
         public string UserName { get; set; }
