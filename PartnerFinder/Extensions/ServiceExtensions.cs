@@ -1,4 +1,5 @@
-﻿using Data.Contexts;
+﻿using AutoMapper;
+using Data.Contexts;
 using Data.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,6 +94,16 @@ namespace PartnerFinder.Extensions
             {
                 services.Add(new ServiceDescriptor(type.GetInterfaces().Where(i => i.Name.EndsWith(suffix)).First(), type, lifetime));
             }
+        }
+
+        public static void ConfigureMapper(this IServiceCollection services)
+        {
+            var mapperConfigure = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutoMapperProfile());
+            });
+            IMapper mapper = mapperConfigure.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
     }

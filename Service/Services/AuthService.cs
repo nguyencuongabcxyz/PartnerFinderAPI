@@ -11,7 +11,7 @@ namespace Service.Services
 {
     public interface IAuthService
     {
-        Task<object> RegisterUserAsUserRole(UserDTO user);
+        Task<object> RegisterUserAsUserRole(ApplicationUser user, string password);
         Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password);
         Task<object> AddRole(string roleName);
     }
@@ -31,19 +31,14 @@ namespace Service.Services
             _roleManager = roleManager;
         }
 
-        public async Task<object> RegisterUserAsUserRole(UserDTO user)
+        public async Task<object> RegisterUserAsUserRole(ApplicationUser user, string password)
         {
-            var applicationUser = new ApplicationUser()
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-            };
-            var result = await _userManager.CreateAsync(applicationUser, user.Password);
+            var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
                 return result;
             }
-            await _userManager.AddToRoleAsync(applicationUser, AuthenticationConstant.UserRole);
+            await _userManager.AddToRoleAsync(user, AuthenticationConstant.UserRole);
             return result;
         }
 

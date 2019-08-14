@@ -28,12 +28,14 @@ namespace PartnerFinder
             //Inject ApplicationSetting
             services.Configure<ApplicationSetting>(Configuration.GetSection("ApplicationSettings"));
 
-            var connectionString = Configuration.GetConnectionString("CompanyComputer");
+            var connectionString = Configuration.GetConnectionString("HomeComputer");
             services.ConfigureDbContext(connectionString);
 
             services.ConfigureCors();
 
             services.ConfigureIdentity();
+
+            services.ConfigureMapper();
 
             var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:Jwt_Secret"].ToString());
             services.ConfigureAuthenticationWithJwtBearer(key);
