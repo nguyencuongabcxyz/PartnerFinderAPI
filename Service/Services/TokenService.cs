@@ -2,12 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Linq;
-using Service.Models;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Service.Services
@@ -18,7 +16,7 @@ namespace Service.Services
     }
     public class TokenService : ITokenService
     {
-        private UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public TokenService(UserManager<ApplicationUser> userManager)
         {
@@ -27,10 +25,10 @@ namespace Service.Services
         public async Task<string> GenerateToken(ApplicationUser user, string secretKey)
         {
             var role = await _userManager.GetRolesAsync(user);
-            IdentityOptions options = new IdentityOptions();
+            var options = new IdentityOptions();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new []
                 {
                     new Claim("name", user.UserName),
                     new Claim("userId", user.Id),

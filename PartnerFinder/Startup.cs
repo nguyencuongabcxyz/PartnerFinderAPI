@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PartnerFinder.CustomFilters;
 using PartnerFinder.Extensions;
 using Service.Models;
 using Service.Services;
@@ -31,16 +30,12 @@ namespace PartnerFinder
             var connectionString = Configuration.GetConnectionString("HomeComputer");
             services.ConfigureDbContext(connectionString);
 
-            services.ConfigureCors();
-
             services.ConfigureIdentity();
 
-            services.ConfigureMapper();
-
-            var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:Jwt_Secret"].ToString());
+            var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JwtSecret"]);
             services.ConfigureAuthenticationWithJwtBearer(key);
 
-            services.AddScoped<ValidateModelAttribute>();
+            services.AddCors();
 
             services.AddHttpContextAccessor();
             services.AddScoped<IAuthService, AuthService>();
@@ -62,8 +57,20 @@ namespace PartnerFinder
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.ConfigureExceptionHandler();
-            app.UseHttpsRedirection();
+            //app.ConfigureExceptionHandler();
+            //app.UseHttpsRedirection();
+            string[] origins =
+            {
+                Configuration["ApplicationSettings:ClientUrl"],
+                Configuration["ApplicationSettings:ClientUrl1"]
+            };
+            app.UseCors(builder =>
+                builder.WithOrigins(origins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+            );
+
             app.UseAuthentication();
             app.UseMvc();
         }

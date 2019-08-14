@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using PartnerFinder.CustomFilters;
 using Service.Constants;
 using Service.Models;
 using Service.Services;
@@ -17,7 +15,6 @@ namespace PartnerFinder.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ValidateModel]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -66,16 +63,18 @@ namespace PartnerFinder.Controllers
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
             var result = await _authService.AuthenticateUser(user, model.Password);
-            if(result == AuthenticateUserResult.Invalid)
+            switch (result)
             {
-                return BadRequest(new { message = "Username or password is incorrect!" });
+                case AuthenticateUserResult.Invalid:
+                    return BadRequest(new { message = "Username or password is incorrect!" });
+                case AuthenticateUserResult.Blocked:
+                    return Forbid();
+                default:
+                {
+                    var token = await _tokenService.GenerateToken(user, _appSetting.JwtSecret);
+                    return Ok(new { token, user.Id });
+                }
             }
-            if(result == AuthenticateUserResult.Blocked)
-            {
-                return Forbid();
-            }
-            var token = await _tokenService.GenerateToken(user, _appSetting.Jwt_Secret);
-            return Ok(new { token });
         }
 
     }
