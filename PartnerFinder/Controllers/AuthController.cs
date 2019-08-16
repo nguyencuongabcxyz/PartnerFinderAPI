@@ -66,11 +66,11 @@ namespace PartnerFinder.Controllers
                     return BadRequest(new { message = "Username or password is incorrect!" });
                 case AuthenticateUserResult.Blocked:
                     return Forbid();
-                default:
-                {
+                case AuthenticateUserResult.Succeeded:
                     var token = await _tokenService.GenerateToken(user, _appSetting.JwtSecret);
                     return Ok(new { token, user.Id });
-                }
+                default:
+                    return NotFound();
             }
         }
 
