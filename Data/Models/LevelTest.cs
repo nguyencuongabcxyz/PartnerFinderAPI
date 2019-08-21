@@ -13,8 +13,8 @@ namespace Data.Models
         public DateTime UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
         [Required]
-        public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public string AdminId { get; set; }
+        public ApplicationUser Admin { get; set; }
         public ICollection<Question> Questions { get; set; }
     }
 }

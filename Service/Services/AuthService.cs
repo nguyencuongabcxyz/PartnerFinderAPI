@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Service.Constants;
 using System.Threading.Tasks;
+using AutoMapper;
+using Service.Models;
 
 namespace Service.Services
 {
     public interface IAuthService
     {
-        Task<object> RegisterUserAsUserRole(ApplicationUser user, string password);
+        Task<object> RegisterUserAsUserRole(UserDto userDto);
         Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password);
         Task<object> AddRole(string roleName);
     }
@@ -15,18 +17,22 @@ namespace Service.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
 
         public AuthService(
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _mapper = mapper;
         }
 
-        public async Task<object> RegisterUserAsUserRole(ApplicationUser user, string password)
+        public async Task<object> RegisterUserAsUserRole(UserDto userDto)
         {
-            var result = await _userManager.CreateAsync(user, password);
+            var user = _mapper.Map<ApplicationUser>(userDto);
+            var result = await _userManager.CreateAsync(user, userDto.Password);
             if (!result.Succeeded)
             {
                 return result;

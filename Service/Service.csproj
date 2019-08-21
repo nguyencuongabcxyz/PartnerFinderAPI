@@ -5,14 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Responsed\**" />
     <Compile Remove="ViewModels\**" />
+    <EmbeddedResource Remove="Responsed\**" />
     <EmbeddedResource Remove="ViewModels\**" />
+    <None Remove="Responsed\**" />
     <None Remove="ViewModels\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="BusinessLogic\" />
-    <Folder Include="Responsed\" />
+    <Folder Include="Factories\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PartnerFinder.Extensions;
+using Service;
 using Service.Models;
 using Service.Services;
 
@@ -27,7 +28,7 @@ namespace PartnerFinder
             //Inject ApplicationSetting
             services.Configure<ApplicationSetting>(Configuration.GetSection("ApplicationSettings"));
 
-            var connectionString = Configuration.GetConnectionString("HomeComputer");
+            var connectionString = Configuration.GetConnectionString("CompanyComputer");
             services.ConfigureDbContext(connectionString);
 
             services.ConfigureIdentity();
@@ -42,8 +43,9 @@ namespace PartnerFinder
             services.AddHttpContextAccessor();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Repository", ServiceLifetime.Scoped);
-            services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Service", ServiceLifetime.Scoped);
+            services.AddScoped<IServiceFactory, ServiceFactory>();
+            //services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Repository", ServiceLifetime.Scoped);
+            //services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Service", ServiceLifetime.Scoped);
 
         }
 

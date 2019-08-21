@@ -18,20 +18,17 @@ namespace PartnerFinder.Controllers
         private readonly ITokenService _tokenService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationSetting _appSetting;
-        private readonly IMapper _mapper;
 
         public AuthController(
             IAuthService authService, 
             ITokenService tokenService, 
             UserManager<ApplicationUser> userManager, 
-            IOptions<ApplicationSetting> appSetting,
-            IMapper mapper)
+            IOptions<ApplicationSetting> appSetting)
         {
             _authService = authService;
             _tokenService = tokenService;
             _userManager = userManager;
             _appSetting = appSetting.Value;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -50,8 +47,7 @@ namespace PartnerFinder.Controllers
         [HttpPost("Register")]
         public async Task<object> RegisterUser(UserDto userDto)
         {
-            var user = _mapper.Map<ApplicationUser>(userDto);
-            var result = await _authService.RegisterUserAsUserRole(user, userDto.Password);
+            var result = await _authService.RegisterUserAsUserRole(userDto);
             return Ok(result);
         }
 
