@@ -1,9 +1,5 @@
-﻿using Data.Models;
-using Data.Repositories;
+﻿
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Service.Services;
 
 namespace Service

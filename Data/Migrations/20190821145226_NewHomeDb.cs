@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class UpdateCompanyDb : Migration
+    public partial class NewHomeDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -215,14 +215,14 @@ namespace Data.Migrations
                     CreatedDate = table.Column<DateTime>(nullable: false),
                     UpdatedDate = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    UserId = table.Column<string>(nullable: false)
+                    AdminId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LevelTests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LevelTests_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_LevelTests_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -354,7 +354,7 @@ namespace Data.Migrations
                     Name = table.Column<string>(nullable: false),
                     Avatar = table.Column<string>(nullable: true),
                     Age = table.Column<int>(nullable: false),
-                    Level = table.Column<int>(nullable: false),
+                    Level = table.Column<int>(nullable: true),
                     Location = table.Column<string>(nullable: false),
                     Hobbies = table.Column<string>(nullable: true),
                     Introduction = table.Column<string>(nullable: true),
@@ -566,9 +566,9 @@ namespace Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LevelTests_UserId",
+                name: "IX_LevelTests_AdminId",
                 table: "LevelTests",
-                column: "UserId");
+                column: "AdminId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ReceiverId",

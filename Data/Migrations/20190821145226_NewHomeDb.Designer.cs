@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190806012216_UpdateCompanyDb")]
-    partial class UpdateCompanyDb
+    [Migration("20190821145226_NewHomeDb")]
+    partial class NewHomeDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -121,6 +121,9 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AdminId")
+                        .IsRequired();
+
                     b.Property<DateTime>("CreatedDate");
 
                     b.Property<bool>("IsDeleted");
@@ -129,12 +132,9 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("UpdatedDate");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AdminId");
 
                     b.ToTable("LevelTests");
                 });
@@ -344,7 +344,7 @@ namespace Data.Migrations
 
                     b.Property<string>("Introduction");
 
-                    b.Property<int>("Level");
+                    b.Property<int?>("Level");
 
                     b.Property<string>("Location")
                         .IsRequired();
@@ -589,9 +589,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Models.LevelTest", b =>
                 {
-                    b.HasOne("Data.Models.ApplicationUser", "User")
+                    b.HasOne("Data.Models.ApplicationUser", "Admin")
                         .WithMany("LevelTests")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Data.Models;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,8 @@ namespace Service.Services
 {
     public interface IUserInformationService
     {
-        bool CheckExistence(string id);
-        bool CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification);
+        Task<bool> CheckExistence(string id);
+        Task<bool> CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification);
     }
     public class UserInformationService : IUserInformationService
     {
@@ -22,15 +23,15 @@ namespace Service.Services
             _userRepo = new UserRepository(dbContext);
         }
 
-        public bool CheckExistence(string id)
+        public async Task<bool> CheckExistence(string id)
         {
-            var retrievedUser = _userRepo.GetOne(id);
+            var retrievedUser = await _userRepo.GetOne(id);
             return retrievedUser != null;
         }
 
-        public bool CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification)
+        public async Task<bool> CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification)
         {
-            var userInfo = _userInformationRepo.GetOneByCondition(specification);
+            var userInfo = await _userInformationRepo.GetOneByCondition(specification);
             return userInfo != null;
         }
     }
