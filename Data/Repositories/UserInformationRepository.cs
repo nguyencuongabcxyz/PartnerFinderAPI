@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
 {
-    public class UserInformationRepository : BaseRepository<UserInformation>
+    public interface IUserInformationRepository : IBaseRepository<UserInformation> { }
+    public class UserInformationRepository : BaseRepository<UserInformation>, IUserInformationRepository
     {
         public UserInformationRepository(DbContext dbContext) : base(dbContext)
         { 

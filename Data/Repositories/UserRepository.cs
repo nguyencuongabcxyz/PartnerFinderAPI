@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
 {
-
-    public class UserRepository : BaseRepository<ApplicationUser>
+    public interface IUserRepository : IBaseRepository<ApplicationUser> { }
+    public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     {
         public UserRepository(DbContext dbContext) : base(dbContext)
         {

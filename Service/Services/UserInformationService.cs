@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Data;
 using Data.Models;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +18,11 @@ namespace Service.Services
         private readonly IBaseRepository<UserInformation> _userInformationRepo;
         private readonly IBaseRepository<ApplicationUser> _userRepo;
 
-        public UserInformationService(DbContext dbContext)
+        public UserInformationService(IRepositoryFactory repositoryFactory)
         {
-            _userInformationRepo = new UserInformationRepository(dbContext);
-            _userRepo = new UserRepository(dbContext);
+            var repositoryFactory1 = repositoryFactory;
+            _userInformationRepo = repositoryFactory1.CreateUserInformationRepo();
+            _userRepo = repositoryFactory1.CreateUserRepo();
         }
 
         public async Task<bool> CheckExistence(string id)
