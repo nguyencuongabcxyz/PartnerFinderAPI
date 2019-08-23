@@ -10,14 +10,18 @@ namespace Data.Models
         [Required]
         public string Content { get; set; }
         [Required]
-        public int Type { get; set; }
+        public QuestionType Type { get; set; }
         public string Audio { get; set; }
-        [Required]
-        public string RightAnwser { get; set; }
         public DateTime UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
-        public int TestId { get; set; }
+        public int LevelTestId { get; set; }
         public LevelTest LevelTest { get; set; }
         public ICollection<AnswerOption> AnswerOptions { get; set; }
+    }
+
+    public enum QuestionType
+    {
+        NonAudio,
+        Audio
     }
 }
