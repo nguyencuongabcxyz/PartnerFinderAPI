@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Data;
 using Data.Models;
 using Data.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Service.Services
 {
@@ -15,14 +14,13 @@ namespace Service.Services
     }
     public class UserInformationService : IUserInformationService
     {
-        private readonly IBaseRepository<UserInformation> _userInformationRepo;
-        private readonly IBaseRepository<ApplicationUser> _userRepo;
+        private readonly IUserInformationRepository _userInformationRepo;
+        private readonly IUserRepository _userRepo;
 
         public UserInformationService(IRepositoryFactory repositoryFactory)
         {
-            var repositoryFactory1 = repositoryFactory;
-            _userInformationRepo = repositoryFactory1.CreateUserInformationRepo();
-            _userRepo = repositoryFactory1.CreateUserRepo();
+            _userInformationRepo = repositoryFactory.CreateUserInformationRepo();
+            _userRepo = repositoryFactory.CreateUserRepo();
         }
 
         public async Task<bool> CheckExistence(string id)

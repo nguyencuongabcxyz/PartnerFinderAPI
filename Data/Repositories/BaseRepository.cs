@@ -53,5 +53,10 @@ namespace Data.Repositories
         {
             EntitiesSet.RemoveRange(entities);
         }
+
+        public async Task<int> Count()
+        {
+            return await EntitiesSet.CountAsync();
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace Data.Repositories
 {
     public interface IBaseRepository<T> where T : class
     {
+        Task<int> Count();
         Task Add(T entity);
         Task AddRange(IEnumerable<T> entities);
         Task<T> GetOne<TU>(TU id);

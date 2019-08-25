@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Data.Repositories;
+﻿using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -10,6 +7,7 @@ namespace Data
     {
         IUserInformationRepository CreateUserInformationRepo();
         IUserRepository CreateUserRepo();
+        ILevelTestRepository CreateLevelTestRepo();
     }
 
     public class RepositoryFactory : IRepositoryFactory
@@ -30,6 +28,11 @@ namespace Data
         public IUserRepository CreateUserRepo()
         {
             return new UserRepository(_dbContext);
+        }
+
+        public ILevelTestRepository CreateLevelTestRepo()
+        {
+            return new LevelTestRepository(_dbContext);
         }
     }
 }

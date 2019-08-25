@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Data.Models;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 
@@ -32,7 +29,7 @@ namespace PartnerFinder.Controllers
             var isHavingLevel = await userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id && m.Level != null);
 
 
-            return Ok(new { isHavingInfo = isHavingInfo, isHavingLevel = isHavingLevel });
+            return Ok(new {isHavingInfo, isHavingLevel });
         }
 
     }

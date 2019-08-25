@@ -1,5 +1,4 @@
-﻿
-using Data;
+﻿using Data;
 using Microsoft.EntityFrameworkCore;
 using Service.Services;
 
@@ -8,6 +7,7 @@ namespace Service
     public interface IServiceFactory
     {
         IUserInformationService CreateUserInformationService();
+        ILevelTestService CreateLevelTestService();
         IUnitOfWork CreateUnitOfWork();
     }
     public class ServiceFactory : IServiceFactory
@@ -31,5 +31,9 @@ namespace Service
             return new UnitOfWork(_dbContext);
         }
 
+        public ILevelTestService CreateLevelTestService()
+        {
+            return new LevelTestService(_repositoryFactory);
+        }
     }
 }
