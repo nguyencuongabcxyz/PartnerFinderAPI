@@ -30,7 +30,6 @@ namespace PartnerFinder.Controllers
             var isHavingInfo = await userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id);
             var isHavingLevel = await userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id && m.Level != null);
 
-
             return Ok(new {isHavingInfo, isHavingLevel });
         }
 
@@ -42,6 +41,12 @@ namespace PartnerFinder.Controllers
             if (!isUserExisting)
             {
                 return NotFound();
+            }
+
+            var isInitializedInfo = await userInformationService.CheckInitializedInfo(id);
+            if (!isInitializedInfo)
+            {
+                await userInformationService.AddWithEmptyInfo(id, "");
             }
             using (var unitOfWork = _serviceFactory.CreateUnitOfWork())
             {

@@ -45,7 +45,7 @@ namespace PartnerFinder.Controllers
         public async Task<object> RegisterUser(UserDto userDto)
         {
             var user = new ApplicationUser();
-            var result = await _authService.RegisterUserAsUserRole(userDto, user);
+            var result = await _authService.RegisterUserAsUserRole(userDto);
 
             return Ok(result);
         }

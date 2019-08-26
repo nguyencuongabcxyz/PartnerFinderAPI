@@ -10,6 +10,7 @@ namespace Service.Services
     public interface IUserInformationService
     {
         Task<bool> CheckExistence(string id);
+        Task<bool> CheckInitializedInfo(string id);
         Task<bool> CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification);
         Task UpdateLevel(string id, UserLevel userLevel);
         Task AddWithEmptyInfo(string id, string name);
@@ -48,6 +49,12 @@ namespace Service.Services
         {
             var userInfo = await _userInformationRepo.GetOneByCondition(specification);
             return userInfo != null;
+        }
+
+        public async Task<bool> CheckInitializedInfo(string id)
+        {
+            var retrievedUserInfo = await _userInformationRepo.GetOne(id);
+            return retrievedUserInfo != null;
         }
 
         public async Task UpdateLevel(string id, UserLevel userLevel)
