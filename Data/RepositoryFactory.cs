@@ -8,6 +8,8 @@ namespace Data
         IUserInformationRepository CreateUserInformationRepo();
         IUserRepository CreateUserRepo();
         ILevelTestRepository CreateLevelTestRepo();
+        IQuestionRepository CreateQuestionRepo();
+        IAnswerOptionRepository CreateAnswerOptionRepo();
     }
 
     public class RepositoryFactory : IRepositoryFactory
@@ -33,6 +35,16 @@ namespace Data
         public ILevelTestRepository CreateLevelTestRepo()
         {
             return new LevelTestRepository(_dbContext);
+        }
+
+        public IQuestionRepository CreateQuestionRepo()
+        {
+            return new QuestionRepository(_dbContext);
+        }
+
+        public IAnswerOptionRepository CreateAnswerOptionRepo()
+        {
+            return new AnswerOptionRepository(_dbContext);
         }
     }
 }

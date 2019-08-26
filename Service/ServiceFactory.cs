@@ -8,6 +8,7 @@ namespace Service
     {
         IUserInformationService CreateUserInformationService();
         ILevelTestService CreateLevelTestService();
+        IQuestionService CreateQuestionService();
         IUnitOfWork CreateUnitOfWork();
     }
     public class ServiceFactory : IServiceFactory
@@ -33,7 +34,12 @@ namespace Service
 
         public ILevelTestService CreateLevelTestService()
         {
-            return new LevelTestService(_repositoryFactory);
+            return new LevelTestService(_repositoryFactory, this);
+        }
+
+        public IQuestionService CreateQuestionService()
+        {
+            return new QuestionService(_repositoryFactory);
         }
     }
 }

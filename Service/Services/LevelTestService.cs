@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Data;
 using Data.Models;
 using Data.Repositories;
+using Service.Models;
 
 namespace Service.Services
 {
@@ -14,14 +15,17 @@ namespace Service.Services
         Task<bool> CheckExistence(int id);
         Task<int> CountAll();
         Task<int> Count();
+        Task<UserLevel> GetLevelAfterTest(IEnumerable<QuestionResultDto> questionResult);
     }
     public class LevelTestService : ILevelTestService
     {
         private readonly ILevelTestRepository _levelTestRepo;
+        private readonly IQuestionService _questionService;
 
-        public LevelTestService(IRepositoryFactory repositoryFactory)
+        public LevelTestService(IRepositoryFactory repositoryFactory, IServiceFactory serviceFactory)
         {
             _levelTestRepo = repositoryFactory.CreateLevelTestRepo();
+            _questionService = serviceFactory.CreateQuestionService();
         }
 
         public async Task<bool> CheckExistence(int id)
@@ -41,7 +45,6 @@ namespace Service.Services
             return allTests.Count();
         }
 
-
         public async Task<LevelTest> GetOneWithQuestionsAndAnswerOptions(int id)
         {
             return await _levelTestRepo.GetOneWithQuestionsAndAnswerOptions(id);
@@ -50,6 +53,35 @@ namespace Service.Services
         public async Task<IEnumerable<LevelTest>> GetAllWithQuestionsAndAnswerOptions()
         {
             return await _levelTestRepo.GetAllWithQuestionsAndOptions();
+        }
+
+        private async Task<int> CountRightAnswer(IEnumerable<QuestionResultDto> questionResult)
+        {
+            var count = 0;
+            foreach (var i in questionResult)
+            {
+                var isRightAnswer = await _questionService.CheckAnswer(i);
+                if (isRightAnswer) count++;
+            }
+
+            return count;
+        }
+
+        public async Task<UserLevel> GetLevelAfterTest(IEnumerable<QuestionResultDto> questionResult)
+        {
+            var rightAnswerCount = await CountRightAnswer(questionResult);
+            if (rightAnswerCount < 5)
+            {
+                return UserLevel.Beginner;
+            }
+            else if (rightAnswerCount >= 5 && rightAnswerCount < 10)
+            {
+                return UserLevel.Intermediate;
+            }
+            else
+            {
+                return UserLevel.Advanced;
+            }
         }
     }
 }

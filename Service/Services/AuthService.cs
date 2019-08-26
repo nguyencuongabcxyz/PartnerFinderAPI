@@ -9,7 +9,7 @@ namespace Service.Services
 {
     public interface IAuthService
     {
-        Task<object> RegisterUserAsUserRole(UserDto userDto);
+        Task<object> RegisterUserAsUserRole(UserDto userDto, ApplicationUser returnUser);
         Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password);
         Task<object> AddRole(string roleName);
     }
@@ -29,15 +29,15 @@ namespace Service.Services
             _mapper = mapper;
         }
 
-        public async Task<object> RegisterUserAsUserRole(UserDto userDto)
+        public async Task<object> RegisterUserAsUserRole(UserDto userDto, ApplicationUser returnUser)
         {
-            var user = _mapper.Map<ApplicationUser>(userDto);
-            var result = await _userManager.CreateAsync(user, userDto.Password);
+            returnUser = _mapper.Map<ApplicationUser>(userDto);
+            var result = await _userManager.CreateAsync(returnUser, userDto.Password);
             if (!result.Succeeded)
             {
                 return result;
             }
-            await _userManager.AddToRoleAsync(user, AuthenticationConstant.UserRole);
+            await _userManager.AddToRoleAsync(returnUser, AuthenticationConstant.UserRole);
             return result;
         }
 

@@ -24,5 +24,6 @@ namespace PartnerFinder.Controllers
             var randomTest = levelTests.ToList().GetRandomElement();
             return Ok(randomTest);
         }
+
     }
 }

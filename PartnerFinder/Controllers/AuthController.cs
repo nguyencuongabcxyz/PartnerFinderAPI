@@ -3,6 +3,7 @@ using Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Service;
 using Service.Constants;
 using Service.Models;
 using Service.Services;
@@ -15,6 +16,7 @@ namespace PartnerFinder.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
+        private readonly IServiceFactory _serviceFactory;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationSetting _appSetting;
 
@@ -22,18 +24,14 @@ namespace PartnerFinder.Controllers
             IAuthService authService, 
             ITokenService tokenService, 
             UserManager<ApplicationUser> userManager, 
-            IOptions<ApplicationSetting> appSetting)
+            IOptions<ApplicationSetting> appSetting,
+            IServiceFactory serviceFactory)
         {
             _authService = authService;
             _tokenService = tokenService;
             _userManager = userManager;
             _appSetting = appSetting.Value;
-        }
-
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return Ok("sádafwrew");
+            _serviceFactory = serviceFactory;
         }
 
         [HttpPost("CreateRole/{role}")]
@@ -46,7 +44,9 @@ namespace PartnerFinder.Controllers
         [HttpPost("Register")]
         public async Task<object> RegisterUser(UserDto userDto)
         {
-            var result = await _authService.RegisterUserAsUserRole(userDto);
+            var user = new ApplicationUser();
+            var result = await _authService.RegisterUserAsUserRole(userDto, user);
+
             return Ok(result);
         }
 

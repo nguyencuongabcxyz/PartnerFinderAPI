@@ -11,9 +11,8 @@ namespace Data.Models
         [Required]
         public string Name { get; set; }
         public string Avatar { get; set; }
-        public int Age { get; set; }
+        public int? Age { get; set; }
         public UserLevel? Level { get; set; }
-        [Required]
         public string Location { get; set; }
         public string Hobbies { get; set; }
         public string Introduction { get; set; }

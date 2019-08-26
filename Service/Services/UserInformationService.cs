@@ -11,6 +11,8 @@ namespace Service.Services
     {
         Task<bool> CheckExistence(string id);
         Task<bool> CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification);
+        Task UpdateLevel(string id, UserLevel userLevel);
+        Task AddWithEmptyInfo(string id, string name);
     }
     public class UserInformationService : IUserInformationService
     {
@@ -23,6 +25,19 @@ namespace Service.Services
             _userRepo = repositoryFactory.CreateUserRepo();
         }
 
+        public async Task AddWithEmptyInfo(string id, string name)
+        {
+            var userInfo = new UserInformation()
+            {
+                UserId = id,
+                Name = name,
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now
+            };
+
+            await _userInformationRepo.Add(userInfo);
+        }
+
         public async Task<bool> CheckExistence(string id)
         {
             var retrievedUser = await _userRepo.GetOne(id);
@@ -33,6 +48,12 @@ namespace Service.Services
         {
             var userInfo = await _userInformationRepo.GetOneByCondition(specification);
             return userInfo != null;
+        }
+
+        public async Task UpdateLevel(string id, UserLevel userLevel)
+        {
+            var userInfo = await _userInformationRepo.GetOne(id);
+            userInfo.Level = userLevel;
         }
     }
 }
