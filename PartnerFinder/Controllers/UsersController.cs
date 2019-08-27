@@ -20,40 +20,45 @@ namespace PartnerFinder.Controllers
         [HttpGet("{id}/checkInfo")]
         public async Task<IActionResult> CheckIfUserUpdateInfo(string id)
         {
-            var userInformationService = _serviceFactory.CreateUserInformationService();
-            var isUserExisting = await userInformationService.CheckExistence(id);
-            if (!isUserExisting)
+            using (_serviceFactory.CreateUnitOfWork())
             {
-                return NotFound();
+                var userInformationService = _serviceFactory.CreateUserInformationService();
+                var isUserExisting = await userInformationService.CheckExistence(id);
+                if (!isUserExisting)
+                {
+                    return NotFound();
+                }
+
+                var isInitializedInfo = await userInformationService.CheckInitializedInfo(id);
+                if (!isInitializedInfo)
+                {
+                    await userInformationService.AddWithEmptyInfo(id, "");
+                }
+
+                var completedInfoPercentage = await userInformationService.GetPercentageOfCompletedInfo(id);
+                var isHavingLevel = await userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id && m.Level != null);
+                return Ok(new { completedInfoPercentage, isHavingLevel });
             }
-
-            var isHavingInfo = await userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id);
-            var isHavingLevel = await userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id && m.Level != null);
-
-            return Ok(new {isHavingInfo, isHavingLevel });
         }
 
         [HttpPatch("{id}/updateLevel")]
         public async Task<IActionResult> UpdateLevel(string id, List<QuestionResultDto> questionResult)
         {
             var userInformationService = _serviceFactory.CreateUserInformationService();
+
             var isUserExisting = await userInformationService.CheckExistence(id);
             if (!isUserExisting)
             {
                 return NotFound();
             }
 
-            var isInitializedInfo = await userInformationService.CheckInitializedInfo(id);
-            if (!isInitializedInfo)
+            var testResult = await _serviceFactory.CreateLevelTestService().GetResultAfterTest(questionResult);
+            using (_serviceFactory.CreateUnitOfWork())
             {
-                await userInformationService.AddWithEmptyInfo(id, "");
+                await userInformationService.UpdateLevel(id, testResult.Level);
             }
-            using (var unitOfWork = _serviceFactory.CreateUnitOfWork())
-            {
-                var userLevel = await _serviceFactory.CreateLevelTestService().GetLevelAfterTest(questionResult);
-                await userInformationService.UpdateLevel(id, userLevel);
-            }
-            return Ok();
+             
+            return Ok(testResult);
         }
 
     }

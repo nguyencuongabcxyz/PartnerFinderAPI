@@ -55,6 +55,7 @@ namespace PartnerFinder.Controllers
         {
             var user = await _userManager.FindByNameAsync(loginInfoDto.UserName);
             var result = await _authService.AuthenticateUser(user, loginInfoDto.Password);
+            var temp = AuthenticateUserResult.Succeeded;
             switch (result)
             {
                 case AuthenticateUserResult.Invalid:

@@ -15,7 +15,7 @@ namespace Service.Services
         Task<bool> CheckExistence(int id);
         Task<int> CountAll();
         Task<int> Count();
-        Task<UserLevel> GetLevelAfterTest(IEnumerable<QuestionResultDto> questionResult);
+        Task<TestResultDto> GetResultAfterTest(IEnumerable<QuestionResultDto> questionResult);
     }
     public class LevelTestService : ILevelTestService
     {
@@ -67,20 +67,32 @@ namespace Service.Services
             return count;
         }
 
-        public async Task<UserLevel> GetLevelAfterTest(IEnumerable<QuestionResultDto> questionResult)
+        public async Task<TestResultDto> GetResultAfterTest(IEnumerable<QuestionResultDto> questionResult)
         {
             var rightAnswerCount = await CountRightAnswer(questionResult);
             if (rightAnswerCount < 5)
             {
-                return UserLevel.Beginner;
+                return new TestResultDto()
+                {
+                    RightAnswerNumber = rightAnswerCount,
+                    Level = UserLevel.Beginner
+                };
             }
             else if (rightAnswerCount >= 5 && rightAnswerCount < 10)
             {
-                return UserLevel.Intermediate;
+                return new TestResultDto()
+                {
+                    RightAnswerNumber = rightAnswerCount,
+                    Level = UserLevel.Intermediate
+                };
             }
             else
             {
-                return UserLevel.Advanced;
+                return new TestResultDto()
+                {
+                    RightAnswerNumber = rightAnswerCount,
+                    Level = UserLevel.Advanced
+                };
             }
         }
     }
