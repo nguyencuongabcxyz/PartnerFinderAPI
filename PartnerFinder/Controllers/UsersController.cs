@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using PartnerFinder.CustomFilters;
 using Service;
 using Service.Models;
 
 namespace PartnerFinder.Controllers
 {
+    [ServiceFilter(typeof(ObjectExistenceFilter))]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -23,12 +25,6 @@ namespace PartnerFinder.Controllers
             using (_serviceFactory.CreateUnitOfWork())
             {
                 var userInformationService = _serviceFactory.CreateUserInformationService();
-                var isUserExisting = await userInformationService.CheckExistence(id);
-                if (!isUserExisting)
-                {
-                    return NotFound();
-                }
-
                 var isInitializedInfo = await userInformationService.CheckInitializedInfo(id);
                 if (!isInitializedInfo)
                 {
@@ -45,12 +41,6 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> UpdateLevel(string id, List<QuestionResultDto> questionResult)
         {
             var userInformationService = _serviceFactory.CreateUserInformationService();
-
-            var isUserExisting = await userInformationService.CheckExistence(id);
-            if (!isUserExisting)
-            {
-                return NotFound();
-            }
 
             var testResult = await _serviceFactory.CreateLevelTestService().GetResultAfterTest(questionResult);
             using (_serviceFactory.CreateUnitOfWork())

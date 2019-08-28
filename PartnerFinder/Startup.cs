@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PartnerFinder.CustomFilters;
 using PartnerFinder.Extensions;
 using Service;
 using Service.Models;
@@ -40,6 +41,8 @@ namespace PartnerFinder
             services.ConfigureMapper();
 
             services.AddCors();
+
+            services.AddScoped<ObjectExistenceFilter>();
 
             services.AddHttpContextAccessor();
             services.AddScoped<IAuthService, AuthService>();

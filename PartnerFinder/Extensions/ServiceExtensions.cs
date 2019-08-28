@@ -11,6 +11,7 @@ using Service;
 using System;
 using System.Linq;
 using System.Reflection;
+using PartnerFinder.CustomFilters;
 
 namespace PartnerFinder.Extensions
 {

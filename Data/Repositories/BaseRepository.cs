@@ -28,6 +28,8 @@ namespace Data.Repositories
 
         public virtual async Task<T> GetOne<TU>(TU id)
         {
+            var retrievedObject = await EntitiesSet.FindAsync(id);
+            if(retrievedObject == null) throw new ObjectNotFoundException("Object can not be found with given id!");
             return await EntitiesSet.FindAsync(id);
         }
 
