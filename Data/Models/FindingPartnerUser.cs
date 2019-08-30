@@ -10,6 +10,7 @@ namespace Data.Models
         public string UserId { get; set; }
         public DateTime PostedDate { get; set; }
         [Required]
+        [MaxLength(300)]
         public string Description { get; set; }
         public bool IsDeleted { get; set; }
         public ApplicationUser User { get; set; }

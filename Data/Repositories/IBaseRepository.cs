@@ -11,6 +11,8 @@ namespace Data.Repositories
         Task Add(T entity);
         Task AddRange(IEnumerable<T> entities);
         Task<T> GetOne<TU>(TU id);
+        Task<IEnumerable<T>> GetRange(int index, int size);
+        Task<IEnumerable<T>> GetRangeWithCondition(int index, int size, Expression<Func<T, bool>> expression);
         Task<IEnumerable<T>> GetAll();
         Task<T> GetOneByCondition(Expression<Func<T, bool>> expression);
         Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> expression);

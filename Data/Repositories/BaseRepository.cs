@@ -38,6 +38,12 @@ namespace Data.Repositories
             return await EntitiesSet.ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetRange(int index, int size)
+        {
+            var skipCount = index * size;
+            return await EntitiesSet.Skip(skipCount).Take(size).ToListAsync();
+        }
+
         public virtual async Task<T> GetOneByCondition(Expression<Func<T, bool>> expression)
         {
             return await EntitiesSet.Where(expression).FirstOrDefaultAsync();
@@ -59,6 +65,18 @@ namespace Data.Repositories
         public async Task<int> Count()
         {
             return await EntitiesSet.CountAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetRangeWithCondition(int index, int size, Expression<Func<T, bool>> expression)
+        {
+            var skipCount = index * size;
+            return await EntitiesSet.Where(expression).Skip(skipCount).Take(size).ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> OrderBeforeGetRange(int index, int size, Expression<Func<T, bool>> expression)
+        {
+            var skipCount = index * size;
+            return await EntitiesSet.Where(expression).Skip(skipCount).Take(size).ToListAsync();
         }
     }
 }

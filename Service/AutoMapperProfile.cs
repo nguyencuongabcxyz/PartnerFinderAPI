@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using Data.Models;
 using Service.Models;
 
@@ -10,6 +11,10 @@ namespace Service
         {
             CreateMap<ApplicationUser, UserDto>();
             CreateMap<UserDto, ApplicationUser>();
+            CreateMap<UserInformation, FindingPartnerUserDto>();
+            CreateMap<FindingPartnerUser, FindingPartnerUserDto>();
+            CreateMap<IEnumerable<UserInformation>, IEnumerable<FindingPartnerUserDto>>();
+            CreateMap<IEnumerable<FindingPartnerUser>, IEnumerable<FindingPartnerUserDto>>();
         }
     }
 }

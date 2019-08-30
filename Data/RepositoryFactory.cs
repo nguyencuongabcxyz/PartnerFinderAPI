@@ -10,6 +10,7 @@ namespace Data
         ILevelTestRepository CreateLevelTestRepo();
         IQuestionRepository CreateQuestionRepo();
         IAnswerOptionRepository CreateAnswerOptionRepo();
+        IFindingPartnerUserRepository CreateFindingPartnerUserRepo();
     }
 
     public class RepositoryFactory : IRepositoryFactory
@@ -45,6 +46,11 @@ namespace Data
         public IAnswerOptionRepository CreateAnswerOptionRepo()
         {
             return new AnswerOptionRepository(_dbContext);
+        }
+
+        public IFindingPartnerUserRepository CreateFindingPartnerUserRepo()
+        {
+            return new FindingPartnerUserRepository(_dbContext);
         }
     }
 }

@@ -97,8 +97,19 @@ namespace PartnerFinder.Extensions
             {
                 mc.AddProfile(new AutoMapperProfile());
             });
-            IMapper mapper = mapperConfigure.CreateMapper();
+            var mapper = mapperConfigure.CreateMapper();
             services.AddSingleton(mapper);
+        }
+
+        public static void RegisterServiceFactory(this IServiceCollection services, string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+            var mapperConfiguration = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutoMapperProfile());
+            });
+            services.AddScoped<IServiceFactory>(s => new ServiceFactory(new AppDbContext(optionsBuilder.Options), mapperConfiguration.CreateMapper()));
         }
 
     }

@@ -9,6 +9,7 @@ namespace Data.Models
         [Key, ForeignKey(nameof(ApplicationUser))]
         public string UserId { get; set; }
         [Required]
+        [MaxLength(20)]
         public string Name { get; set; }
         public string Avatar { get; set; }
         public int? Age { get; set; }

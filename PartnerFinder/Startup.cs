@@ -1,13 +1,10 @@
 ﻿using System.Text;
-using Data.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PartnerFinder.CustomFilters;
 using PartnerFinder.Extensions;
-using Service;
 using Service.Models;
 using Service.Services;
 
@@ -25,12 +22,13 @@ namespace PartnerFinder
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("CompanyComputer");
+
             services.ConfigureMvc();
 
             //Inject ApplicationSetting
             services.Configure<ApplicationSetting>(Configuration.GetSection("ApplicationSettings"));
 
-            var connectionString = Configuration.GetConnectionString("CompanyComputer");
             services.ConfigureDbContext(connectionString);
 
             services.ConfigureIdentity();
@@ -45,15 +43,11 @@ namespace PartnerFinder
             services.AddScoped<ObjectExistenceFilter>();
 
             services.AddHttpContextAccessor();
+
+            services.RegisterServiceFactory(connectionString);
+
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
-
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlServer(connectionString);
-            services.AddScoped<IServiceFactory>(s => new ServiceFactory(new AppDbContext(optionsBuilder.Options)));
-            //services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Repository", ServiceLifetime.Scoped);
-            //services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Service", ServiceLifetime.Scoped);
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
