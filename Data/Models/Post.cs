@@ -29,6 +29,7 @@ namespace Data.Models
     public enum PostType
     {
         Question,
-        Feedback
+        WrittenFeedback,
+        SpokenFeedback
     }
 }

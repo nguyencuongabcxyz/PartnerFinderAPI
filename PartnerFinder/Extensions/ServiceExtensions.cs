@@ -9,9 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Service;
 using System;
-using System.Linq;
-using System.Reflection;
-using PartnerFinder.CustomFilters;
 
 namespace PartnerFinder.Extensions
 {
@@ -78,17 +75,6 @@ namespace PartnerFinder.Extensions
                     ClockSkew = TimeSpan.Zero
                 };
             });
-        }
-
-        //Extension method for register services with same suffix 
-        public static void RegisterAllTypes(this IServiceCollection services, Assembly assembly, string suffix,
-            ServiceLifetime lifetime = ServiceLifetime.Transient)
-        {
-            var typesFromAssemblies = assembly.DefinedTypes.Where(t => !t.GetTypeInfo().IsAbstract && t.Name.EndsWith(suffix));
-            foreach (var type in typesFromAssemblies)
-            {
-                services.Add(new ServiceDescriptor(type.GetInterfaces().Where(i => i.Name.EndsWith(suffix)).First(), type, lifetime));
-            }
         }
 
         public static void ConfigureMapper(this IServiceCollection services)

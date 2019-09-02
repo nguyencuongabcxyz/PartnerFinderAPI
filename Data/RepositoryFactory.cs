@@ -11,6 +11,8 @@ namespace Data
         IQuestionRepository CreateQuestionRepo();
         IAnswerOptionRepository CreateAnswerOptionRepo();
         IFindingPartnerUserRepository CreateFindingPartnerUserRepo();
+        IPostRepository CreatePostRepo();
+        ICommentRepository CreateCommentRepo();
     }
 
     public class RepositoryFactory : IRepositoryFactory
@@ -51,6 +53,16 @@ namespace Data
         public IFindingPartnerUserRepository CreateFindingPartnerUserRepo()
         {
             return new FindingPartnerUserRepository(_dbContext);
+        }
+
+        public IPostRepository CreatePostRepo()
+        {
+            return new PostRepository(_dbContext);
+        }
+
+        public ICommentRepository CreateCommentRepo()
+        {
+            return new CommentRepository(_dbContext);
         }
     }
 }

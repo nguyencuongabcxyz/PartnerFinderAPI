@@ -13,8 +13,4 @@ namespace Service.Constants
         Invalid,
         Blocked
     }
-    
-    public class ClaimConstant
-    {
-    }
 }

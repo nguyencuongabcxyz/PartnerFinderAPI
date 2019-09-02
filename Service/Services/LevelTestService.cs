@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Data;
 using Data.Models;
@@ -13,7 +12,6 @@ namespace Service.Services
         Task<LevelTest> GetOneWithQuestionsAndAnswerOptions(int id);
         Task<IEnumerable<LevelTest>> GetAllWithQuestionsAndAnswerOptions();
         Task<bool> CheckExistence(int id);
-        Task<int> CountAll();
         Task<int> Count();
         Task<TestResultDto> GetResultAfterTest(IEnumerable<QuestionResultDto> questionResult);
     }
@@ -34,15 +32,9 @@ namespace Service.Services
             return retrievedTest != null;
         }
 
-        public async Task<int> CountAll()
-        {
-            return await _levelTestRepo.Count();
-        }
-
         public async Task<int> Count()
         {
-            var allTests = await _levelTestRepo.GetManyByCondition(t => t.IsDeleted != true);
-            return allTests.Count();
+            return await _levelTestRepo.Count(t => t.IsDeleted != true);
         }
 
         public async Task<LevelTest> GetOneWithQuestionsAndAnswerOptions(int id)

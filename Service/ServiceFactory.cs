@@ -11,6 +11,7 @@ namespace Service
         ILevelTestService CreateLevelTestService();
         IQuestionService CreateQuestionService();
         IFindingPartnerUserService CreateFindingPartnerUserService();
+        IPostService CreatePostService();
         IUnitOfWork CreateUnitOfWork();
     }
     public class ServiceFactory : IServiceFactory
@@ -49,6 +50,11 @@ namespace Service
         public IFindingPartnerUserService CreateFindingPartnerUserService()
         {
             return new FindingPartnerUserService(_repositoryFactory, _mapper);
+        }
+
+        public IPostService CreatePostService()
+        {
+            return new PostService(_repositoryFactory, _mapper);
         }
     }
 }

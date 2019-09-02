@@ -11,10 +11,16 @@ namespace Service
         {
             CreateMap<ApplicationUser, UserDto>();
             CreateMap<UserDto, ApplicationUser>();
+
             CreateMap<UserInformation, FindingPartnerUserDto>();
             CreateMap<FindingPartnerUser, FindingPartnerUserDto>();
             CreateMap<IEnumerable<UserInformation>, IEnumerable<FindingPartnerUserDto>>();
             CreateMap<IEnumerable<FindingPartnerUser>, IEnumerable<FindingPartnerUserDto>>();
+
+            CreateMap<UserInformation, DashboardPostDto>();
+            CreateMap<Post, DashboardPostDto>();
+            CreateMap<IEnumerable<UserInformation>, IEnumerable<DashboardPostDto>>();
+            CreateMap<IEnumerable<Post>, IEnumerable<DashboardPostDto>>();
         }
     }
 }

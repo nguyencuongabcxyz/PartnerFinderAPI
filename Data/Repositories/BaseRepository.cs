@@ -38,20 +38,44 @@ namespace Data.Repositories
             return await EntitiesSet.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetRange(int index, int size)
+        public async Task<IEnumerable<T>> GetRange(int index, int size, Expression<Func<T, bool>> condition = null)
         {
             var skipCount = index * size;
-            return await EntitiesSet.Skip(skipCount).Take(size).ToListAsync();
+            if (condition == null)
+            {
+                return await EntitiesSet.Skip(skipCount).Take(size).ToListAsync();
+            }
+            return await EntitiesSet.Where(condition).Skip(skipCount).Take(size).ToListAsync();
         }
 
-        public virtual async Task<T> GetOneByCondition(Expression<Func<T, bool>> expression)
+        public async Task<IEnumerable<T>> OrderAndGetRange<TU>(int index, int size, OrderType orderType, Expression<Func<T, TU>> orderedKey, Expression<Func<T, bool>> condition)
         {
-            return await EntitiesSet.Where(expression).FirstOrDefaultAsync();
+            var skipCount = index * size;
+            if (condition == null)
+            {
+                if (orderType == OrderType.OrderByAscending)
+                {
+                    return await EntitiesSet.OrderBy(orderedKey).Skip(skipCount).Take(size).ToListAsync();
+                }
+                return await EntitiesSet.OrderByDescending(orderedKey).Skip(skipCount).Take(size).ToListAsync();
+            }
+
+            if (orderType == OrderType.OrderByAscending)
+            {
+                return await EntitiesSet.Where(condition).OrderBy(orderedKey).Skip(skipCount).Take(size).ToListAsync();
+            }
+            return await EntitiesSet.Where(condition).OrderByDescending(orderedKey).Skip(skipCount).Take(size).ToListAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> expression)
+
+        public virtual async Task<T> GetOneByCondition(Expression<Func<T, bool>> condition)
         {
-            return await EntitiesSet.Where(expression).ToListAsync();
+            return await EntitiesSet.Where(condition).FirstOrDefaultAsync();
+        }
+
+        public virtual async Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> condition)
+        {
+            return await EntitiesSet.Where(condition).ToListAsync();
         }
         public void Remove(T entity)
         {
@@ -62,21 +86,19 @@ namespace Data.Repositories
             EntitiesSet.RemoveRange(entities);
         }
 
-        public async Task<int> Count()
+        public async Task<int> Count(Expression<Func<T, bool>> condition = null)
         {
-            return await EntitiesSet.CountAsync();
+            if (condition == null)
+            {
+                return await EntitiesSet.CountAsync();
+            }
+            return await EntitiesSet.Where(condition).CountAsync();
         }
+    }
 
-        public async Task<IEnumerable<T>> GetRangeWithCondition(int index, int size, Expression<Func<T, bool>> expression)
-        {
-            var skipCount = index * size;
-            return await EntitiesSet.Where(expression).Skip(skipCount).Take(size).ToListAsync();
-        }
-
-        public async Task<IEnumerable<T>> OrderBeforeGetRange(int index, int size, Expression<Func<T, bool>> expression)
-        {
-            var skipCount = index * size;
-            return await EntitiesSet.Where(expression).Skip(skipCount).Take(size).ToListAsync();
-        }
+    public enum OrderType
+    {
+        OrderByDescending,
+        OrderByAscending
     }
 }
