@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ namespace Service.Services
 {
     public interface IUserInformationService
     {
-        Task<bool> CheckExistence(string id);
         Task<bool> CheckInitializedInfo(string id);
         Task<bool> CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification);
+        Task<IEnumerable<UserInformation>> GetManyWithCondition(Expression<Func<UserInformation, bool>> condition);
         Task UpdateLevel(string id, UserLevel userLevel);
         Task AddWithEmptyInfo(string id, string name);
         Task<int> GetPercentageOfCompletedInfo(string id);
@@ -41,12 +42,6 @@ namespace Service.Services
             await _userInformationRepo.Add(userInfo);
         }
 
-        public async Task<bool> CheckExistence(string id)
-        {
-            var retrievedUser = await _userRepo.GetOne(id);
-            return retrievedUser != null;
-        }
-
         public async Task<bool> CheckIfUserHaveSpecification(Expression<Func<UserInformation, bool>> specification)
         {
             var userInfo = await _userInformationRepo.GetOneByCondition(specification);
@@ -57,6 +52,11 @@ namespace Service.Services
         {
             var retrievedUserInfo = await _userInformationRepo.GetOne(id);
             return retrievedUserInfo != null;
+        }
+
+        public async Task<IEnumerable<UserInformation>> GetManyWithCondition(Expression<Func<UserInformation, bool>> condition)
+        {
+            return await _userInformationRepo.GetManyByCondition(condition);
         }
 
         public async Task<int> GetPercentageOfCompletedInfo(string id)

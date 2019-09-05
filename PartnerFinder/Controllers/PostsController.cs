@@ -23,7 +23,7 @@ namespace PartnerFinder.Controllers
             return Ok(new {message = "abc"});
         }
 
-        [HttpGet("questionPosts/{index}/{size}")]
+        [HttpGet("questionPosts")]
         public async Task<IActionResult> GetQuestionPostsForPagination(int index, int size)
         {
             var postService = _serviceFactory.CreatePostService();
@@ -32,7 +32,7 @@ namespace PartnerFinder.Controllers
             return Ok(new {questionPosts, count});
         }
 
-        [HttpGet("feedbackPosts/{index}/{size}")]
+        [HttpGet("feedbackPosts")]
         public async Task<IActionResult> GetFeedbackPostsForPagination(int index, int size)
         {
             var postService = _serviceFactory.CreatePostService();

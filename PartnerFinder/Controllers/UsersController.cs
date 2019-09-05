@@ -54,6 +54,5 @@ namespace PartnerFinder.Controllers
              
             return Ok(testResult);
         }
-
     }
 }
