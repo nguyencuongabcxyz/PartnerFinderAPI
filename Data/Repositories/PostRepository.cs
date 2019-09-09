@@ -8,7 +8,7 @@ namespace Data.Repositories
     }
     public class PostRepository : BaseRepository<Post>, IPostRepository
     {
-        public PostRepository(DbContext dbContext) : base(dbContext)
+        public PostRepository(IDbFactory dbFactory) : base(dbFactory)
         {
             
         }

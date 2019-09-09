@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.Extensions;
-using Service;
+using Service.Services;
 
 namespace PartnerFinder.Controllers
 {
@@ -11,17 +10,17 @@ namespace PartnerFinder.Controllers
     [ApiController]
     public class LevelTestsController : ControllerBase
     {
-        private readonly IServiceFactory _serviceFactory;
+        private readonly ILevelTestService _levelTestService;
 
-        public LevelTestsController(IServiceFactory serviceFactory)
+        public LevelTestsController(ILevelTestService levelTestService)
         {
-            _serviceFactory = serviceFactory;
+            _levelTestService = levelTestService;
         }
 
         [HttpGet("random")]
         public async Task<IActionResult> GetRandomTest()
         {
-            var levelTests = await _serviceFactory.CreateLevelTestService().GetAllWithQuestionsAndAnswerOptions();
+            var levelTests = await _levelTestService.GetAllWithQuestionsAndAnswerOptions();
             var randomTest = levelTests.ToList().GetRandomElement();
             return Ok(randomTest);
         }

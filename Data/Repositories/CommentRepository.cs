@@ -1,5 +1,4 @@
 ﻿using Data.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
 {
@@ -9,7 +8,7 @@ namespace Data.Repositories
     }
     public class CommentRepository : BaseRepository<Comment>, ICommentRepository
     {
-        public CommentRepository(DbContext dbContext) : base(dbContext)
+        public CommentRepository(IDbFactory dbFactory) : base(dbFactory)
         {
             
         }

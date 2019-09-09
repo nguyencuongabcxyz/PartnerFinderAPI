@@ -14,7 +14,7 @@ namespace Data.Repositories
 
     public class LevelTestRepository : BaseRepository<LevelTest>, ILevelTestRepository
     {
-        public LevelTestRepository(DbContext dbContext) : base(dbContext)
+        public LevelTestRepository(IDbFactory dbFactory) : base(dbFactory)
         {
 
         }

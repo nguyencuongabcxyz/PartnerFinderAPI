@@ -8,7 +8,7 @@ namespace Data.Repositories
     }
     public class FindingPartnerUserRepository : BaseRepository<FindingPartnerUser>, IFindingPartnerUserRepository
     {
-        public FindingPartnerUserRepository(DbContext dbContext) : base(dbContext)
+        public FindingPartnerUserRepository(IDbFactory dbFactory) : base(dbFactory)
         {
             
         }

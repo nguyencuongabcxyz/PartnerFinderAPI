@@ -11,9 +11,9 @@ namespace Data.Repositories
     {
         protected DbSet<T> EntitiesSet;
 
-        public BaseRepository(DbContext appDbContext)
+        public BaseRepository(IDbFactory dbFactory)
         {
-            EntitiesSet = appDbContext.Set<T>();
+            EntitiesSet = dbFactory.Initialize().Set<T>();
         }
 
         public async Task Add(T entity)

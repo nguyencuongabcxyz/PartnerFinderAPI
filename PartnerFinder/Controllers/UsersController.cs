@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
 using Service;
 using Service.Models;
+using Service.Services;
 
 namespace PartnerFinder.Controllers
 {
@@ -14,44 +14,40 @@ namespace PartnerFinder.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IServiceFactory _serviceFactory;
+        private readonly IUserInformationService _userInformationService;
+        private readonly ILevelTestService _levelTestService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UsersController(IServiceFactory serviceFactory)
+        public UsersController(IUserInformationService userInformationService, ILevelTestService levelTestService, IUnitOfWork unitOfWork)
         {
-            _serviceFactory = serviceFactory;
+            _userInformationService = userInformationService;
+            _levelTestService = levelTestService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("{id}/checkInfo")]
         public async Task<IActionResult> CheckIfUserUpdateInfo(string id)
         {
-            using (_serviceFactory.CreateUnitOfWork())
+            try
             {
-                var userInformationService = _serviceFactory.CreateUserInformationService();
-                try
-                {
-                    await userInformationService.CheckInitializedInfo(id);
-                }
-                catch (ObjectNotFoundException e)
-                {
-                    await userInformationService.AddWithEmptyInfo(id, "");
-                }
-                var completedInfoPercentage = await userInformationService.GetPercentageOfCompletedInfo(id);
-                var isHavingLevel = await userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id && m.Level != null);
-                return Ok(new { completedInfoPercentage, isHavingLevel });
+                await _userInformationService.CheckInitializedInfo(id);
             }
+            catch (ObjectNotFoundException e)
+            {
+                await _userInformationService.AddWithEmptyInfo(id, "");
+                await _unitOfWork.Commit();
+            }
+            var completedInfoPercentage = await _userInformationService.GetPercentageOfCompletedInfo(id);
+            var isHavingLevel = await _userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id && m.Level != null);
+            return Ok(new { completedInfoPercentage, isHavingLevel });
         }
 
         [HttpPatch("{id}/updateLevel")]
         public async Task<IActionResult> UpdateLevel(string id, List<QuestionResultDto> questionResult)
-        {
-            var userInformationService = _serviceFactory.CreateUserInformationService();
-
-            var testResult = await _serviceFactory.CreateLevelTestService().GetResultAfterTest(questionResult);
-            using (_serviceFactory.CreateUnitOfWork())
-            {
-                await userInformationService.UpdateLevel(id, testResult.Level);
-            }
-             
+        { 
+            var testResult = await _levelTestService.GetResultAfterTest(questionResult);
+            await _userInformationService.UpdateLevel(id, testResult.Level);
+            await _unitOfWork.Commit();
             return Ok(testResult);
         }
     }

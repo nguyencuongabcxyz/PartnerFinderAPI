@@ -1,10 +1,12 @@
 ﻿using System.Text;
+using Data.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PartnerFinder.CustomFilters;
 using PartnerFinder.Extensions;
+using Service;
 using Service.Models;
 using Service.Services;
 
@@ -44,10 +46,15 @@ namespace PartnerFinder
 
             services.AddHttpContextAccessor();
 
-            services.RegisterServiceFactory(connectionString);
+            services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Repository", ServiceLifetime.Scoped);
 
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.RegisterAllTypes(typeof(AppDbContext).Assembly, "Service", ServiceLifetime.Scoped);
+
+            services.RegisterDbFactory(connectionString);
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            //services.AddScoped<IAuthService, AuthService>();
+            //services.AddScoped<ITokenService, TokenService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

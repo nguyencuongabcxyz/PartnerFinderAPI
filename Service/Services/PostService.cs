@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data;
 using Data.Models;
 using Data.Repositories;
 using Service.Extensions;
@@ -26,11 +25,11 @@ namespace Service.Services
         private readonly IUserInformationRepository _userInformationRepo;
         private readonly IMapper _mapper;
 
-        public PostService(IRepositoryFactory repositoryFactory, IMapper mapper)
+        public PostService(IPostRepository postRepo, ICommentRepository commentRepo, IUserInformationRepository userInformationRepo, IMapper mapper)
         {
-            _postRepo = repositoryFactory.CreatePostRepo();
-            _commentRepo = repositoryFactory.CreateCommentRepo();
-            _userInformationRepo = repositoryFactory.CreateUserInformationRepo();
+            _postRepo = postRepo;
+            _commentRepo = commentRepo;
+            _userInformationRepo = userInformationRepo;
             _mapper = mapper;
         }
 

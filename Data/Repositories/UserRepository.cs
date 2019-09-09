@@ -6,7 +6,7 @@ namespace Data.Repositories
     public interface IUserRepository : IBaseRepository<ApplicationUser> { }
     public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
     {
-        public UserRepository(DbContext dbContext) : base(dbContext)
+        public UserRepository(IDbFactory dbFactory) : base(dbFactory)
         {
             
         }

@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Service;
 using System;
+using System.Linq;
+using System.Reflection;
+using Data;
 
 namespace PartnerFinder.Extensions
 {
@@ -55,6 +58,17 @@ namespace PartnerFinder.Extensions
             });
         }
 
+        public static void RegisterAllTypes(this IServiceCollection services, Assembly assembly, string suffix,
+            ServiceLifetime lifetime = ServiceLifetime.Transient)
+        {
+            var typesFromAssemblies = assembly.DefinedTypes.Where(t => !t.GetTypeInfo().IsAbstract && t.Name.EndsWith(suffix));
+            var x = 123;
+            foreach (var type in typesFromAssemblies)
+            {
+                services.Add(new ServiceDescriptor(type.GetInterfaces().First(i => i.Name.EndsWith(suffix)), type, lifetime));
+            }
+        }
+
         public static void ConfigureAuthenticationWithJwtBearer(this IServiceCollection services, byte[] key)
         {
             services.AddAuthentication(x =>
@@ -87,15 +101,11 @@ namespace PartnerFinder.Extensions
             services.AddSingleton(mapper);
         }
 
-        public static void RegisterServiceFactory(this IServiceCollection services, string connectionString)
+        public static void RegisterDbFactory(this IServiceCollection services, string connectionString)
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
-            var mapperConfiguration = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new AutoMapperProfile());
-            });
-            services.AddScoped<IServiceFactory>(s => new ServiceFactory(new AppDbContext(optionsBuilder.Options), mapperConfiguration.CreateMapper()));
+            services.AddScoped<IDbFactory>(s => new DbFactory(new AppDbContext(optionsBuilder.Options)));
         }
 
     }

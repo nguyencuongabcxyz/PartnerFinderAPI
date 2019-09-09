@@ -3,7 +3,6 @@ using Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Service;
 using Service.Constants;
 using Service.Models;
 using Service.Services;
@@ -16,7 +15,6 @@ namespace PartnerFinder.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
-        private readonly IServiceFactory _serviceFactory;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationSetting _appSetting;
 
@@ -24,14 +22,12 @@ namespace PartnerFinder.Controllers
             IAuthService authService, 
             ITokenService tokenService, 
             UserManager<ApplicationUser> userManager, 
-            IOptions<ApplicationSetting> appSetting,
-            IServiceFactory serviceFactory)
+            IOptions<ApplicationSetting> appSetting)
         {
             _authService = authService;
             _tokenService = tokenService;
             _userManager = userManager;
             _appSetting = appSetting.Value;
-            _serviceFactory = serviceFactory;
         }
 
         [HttpPost("CreateRole/{role}")]
@@ -43,10 +39,8 @@ namespace PartnerFinder.Controllers
 
         [HttpPost("Register")]
         public async Task<object> RegisterUser(UserDto userDto)
-        {
-            var user = new ApplicationUser();
+        { 
             var result = await _authService.RegisterUserAsUserRole(userDto);
-
             return Ok(result);
         }
 
@@ -55,7 +49,6 @@ namespace PartnerFinder.Controllers
         {
             var user = await _userManager.FindByNameAsync(loginInfoDto.UserName);
             var result = await _authService.AuthenticateUser(user, loginInfoDto.Password);
-            var temp = AuthenticateUserResult.Succeeded;
             switch (result)
             {
                 case AuthenticateUserResult.Invalid:

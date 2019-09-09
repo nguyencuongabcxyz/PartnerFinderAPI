@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data;
 using Data.Models;
 using Data.Repositories;
 using Service.Models;
@@ -20,10 +19,10 @@ namespace Service.Services
         private readonly ILevelTestRepository _levelTestRepo;
         private readonly IQuestionService _questionService;
 
-        public LevelTestService(IRepositoryFactory repositoryFactory, IServiceFactory serviceFactory)
+        public LevelTestService(ILevelTestRepository levelTestRepo, IQuestionService questionService)
         {
-            _levelTestRepo = repositoryFactory.CreateLevelTestRepo();
-            _questionService = serviceFactory.CreateQuestionService();
+            _levelTestRepo = levelTestRepo;
+            _questionService = questionService;
         }
 
         public async Task<bool> CheckExistence(int id)

@@ -9,7 +9,7 @@ namespace Data.Repositories
     public interface  IQuestionRepository : IBaseRepository<Question> { }
     public class QuestionRepository : BaseRepository<Question>, IQuestionRepository
     {
-        public QuestionRepository(DbContext dbContext) : base(dbContext)
+        public QuestionRepository(IDbFactory dbFactory) : base(dbFactory)
         { 
         }
     }

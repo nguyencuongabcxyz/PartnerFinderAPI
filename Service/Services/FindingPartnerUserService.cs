@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data;
 using Data.Models;
 using Data.Repositories;
 using Service.Extensions;
@@ -26,10 +25,10 @@ namespace Service.Services
         private readonly IFindingPartnerUserRepository _findingPartnerUserRepo;
         private readonly IMapper _mapper;
 
-        public FindingPartnerUserService(IRepositoryFactory repositoryFactory, IMapper mapper)
+        public FindingPartnerUserService(IUserInformationRepository userInformationRepo, IFindingPartnerUserRepository findingPartnerUserRepo, IMapper mapper)
         {
-            _userInformationRepo = repositoryFactory.CreateUserInformationRepo();
-            _findingPartnerUserRepo = repositoryFactory.CreateFindingPartnerUserRepo();
+            _userInformationRepo = userInformationRepo;
+            _findingPartnerUserRepo = findingPartnerUserRepo;
             _mapper = mapper;
         }
 

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Data.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
-using Service;
+using Service.Services;
 
 namespace PartnerFinder.Controllers
 {
@@ -15,32 +10,30 @@ namespace PartnerFinder.Controllers
     [ServiceFilter(typeof(ObjectExistenceFilter))]
     public class FindingPartnerUsersController : ControllerBase
     {
-        private readonly IServiceFactory _serviceFactory;
-        public FindingPartnerUsersController(IServiceFactory serviceFactory)
+        private readonly IFindingPartnerUserService _findingPartnerUserService;
+        private readonly IUserInformationService _userInformationService;
+        public FindingPartnerUsersController(IFindingPartnerUserService findingPartnerUserService, IUserInformationService userInformationService)
         {
-            _serviceFactory = serviceFactory;
+            _findingPartnerUserService = findingPartnerUserService;
+            _userInformationService = userInformationService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetForPagination(int index, int size)
         {
-            var findingPartnerService = _serviceFactory.CreateFindingPartnerUserService();
-            var count = await findingPartnerService.Count();
-            var findingPartnerUsers = await findingPartnerService.GetForPagination(index, size);
+            var count = await _findingPartnerUserService.Count();
+            var findingPartnerUsers = await _findingPartnerUserService.GetForPagination(index, size);
             return Ok(new {partnerFinders = findingPartnerUsers, count});
         }
 
         [HttpGet("filter")]
         public async Task<IActionResult> GetWithFilteringCondition(int level, string location, int index, int size)
         {
-            //Expression<Func<UserInformation, bool>> condition = string.IsNullOrEmpty(location) ? (u) =
+            var userInfos = await _userInformationService.GetManyWithCondition(u => (int)u.Level == level && u.Location == location);
 
-            var userInfos = await _serviceFactory.CreateUserInformationService().GetManyWithCondition(u => (int)u.Level == level && u.Location == location);
-
-            var findingPartnerUserService = _serviceFactory.CreateFindingPartnerUserService();
-            var findingPartnerUsers = await findingPartnerUserService
+            var findingPartnerUsers = await _findingPartnerUserService
                 .GetForPaginationWithGivenUsers(userInfos, index, size);
-            var count = await findingPartnerUserService.CountWithGivenUsers(userInfos);
+            var count = await _findingPartnerUserService.CountWithGivenUsers(userInfos);
             return Ok(new {partnerFinders = findingPartnerUsers, count});
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Data;
 using Data.Repositories;
 using Service.Models;
 
@@ -12,13 +11,11 @@ namespace Service.Services
 
     public class QuestionService : IQuestionService
     {
-        private readonly IQuestionRepository _questionRepo;
         private readonly IAnswerOptionRepository _answerOptionRepo;
 
-        public QuestionService(IRepositoryFactory repositoryFactory)
+        public QuestionService(IAnswerOptionRepository answerOptionRepo)
         {
-            _questionRepo = repositoryFactory.CreateQuestionRepo();
-            _answerOptionRepo = repositoryFactory.CreateAnswerOptionRepo();
+            _answerOptionRepo = answerOptionRepo;
         }
 
         public async Task<bool> CheckAnswer(QuestionResultDto questionResult)

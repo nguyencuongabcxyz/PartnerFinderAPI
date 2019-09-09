@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Data;
 using Data.Models;
 using Data.Repositories;
 
@@ -21,12 +20,10 @@ namespace Service.Services
     public class UserInformationService : IUserInformationService
     {
         private readonly IUserInformationRepository _userInformationRepo;
-        private readonly IUserRepository _userRepo;
 
-        public UserInformationService(IRepositoryFactory repositoryFactory)
+        public UserInformationService(IUserInformationRepository userInformationRepo)
         {
-            _userInformationRepo = repositoryFactory.CreateUserInformationRepo();
-            _userRepo = repositoryFactory.CreateUserRepo();
+            _userInformationRepo = userInformationRepo;
         }
 
         public async Task AddWithEmptyInfo(string id, string name)
@@ -65,10 +62,10 @@ namespace Service.Services
             if (retrievedUserInfo == null) return 0;
             var properties = typeof(UserInformation).GetProperties();
             var totalProps = properties.Length;
-            var setValueProps = properties.Select(p => typeof(UserInformation).GetProperty(p.Name).GetValue(retrievedUserInfo))
+            var setValueProps = properties.Select(p => typeof(UserInformation).GetProperty(p.Name)?.GetValue(retrievedUserInfo))
                                           .Count(propValue => propValue != null);
 
-            return (int)(((double)setValueProps/(double)totalProps)*100);
+            return (int)((setValueProps/(double)totalProps)*100);
         }
 
         public async Task UpdateLevel(string id, UserLevel userLevel)
