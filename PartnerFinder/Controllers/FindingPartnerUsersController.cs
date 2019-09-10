@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
+using Service.Models;
 using Service.Services;
 
 namespace PartnerFinder.Controllers
@@ -27,9 +28,9 @@ namespace PartnerFinder.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> GetWithFilteringCondition(int level, string location, int index, int size)
+        public async Task<IActionResult> GetWithFilteringCondition([FromQuery]FilteringUserConditionDto filteringCondition, int index, int size)
         {
-            var userInfos = await _userInformationService.GetManyWithCondition(u => (int)u.Level == level && u.Location == location);
+            var userInfos = await _userInformationService.GetManyWithCondition(_userInformationService.HandleFilterCondition(filteringCondition));
 
             var findingPartnerUsers = await _findingPartnerUserService
                 .GetForPaginationWithGivenUsers(userInfos, index, size);

@@ -62,7 +62,6 @@ namespace PartnerFinder.Extensions
             ServiceLifetime lifetime = ServiceLifetime.Transient)
         {
             var typesFromAssemblies = assembly.DefinedTypes.Where(t => !t.GetTypeInfo().IsAbstract && t.Name.EndsWith(suffix));
-            var x = 123;
             foreach (var type in typesFromAssemblies)
             {
                 services.Add(new ServiceDescriptor(type.GetInterfaces().First(i => i.Name.EndsWith(suffix)), type, lifetime));

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Data.Models;
 using Data.Repositories;
+using Service.Models;
 
 namespace Service.Services
 {
@@ -16,6 +17,7 @@ namespace Service.Services
         Task UpdateLevel(string id, UserLevel userLevel);
         Task AddWithEmptyInfo(string id, string name);
         Task<int> GetPercentageOfCompletedInfo(string id);
+        Expression<Func<UserInformation, bool>> HandleFilterCondition(FilteringUserConditionDto filteringCondition);
     }
     public class UserInformationService : IUserInformationService
     {
@@ -53,7 +55,7 @@ namespace Service.Services
 
         public async Task<IEnumerable<UserInformation>> GetManyWithCondition(Expression<Func<UserInformation, bool>> condition)
         {
-            return await _userInformationRepo.GetManyByCondition(condition);
+            return condition != null ? await _userInformationRepo.GetManyByCondition(condition) : await _userInformationRepo.GetAll();
         }
 
         public async Task<int> GetPercentageOfCompletedInfo(string id)
@@ -72,6 +74,25 @@ namespace Service.Services
         {
             var userInfo = await _userInformationRepo.GetOne(id);
             userInfo.Level = userLevel;
+        }
+
+        public Expression<Func<UserInformation, bool>> HandleFilterCondition(FilteringUserConditionDto filteringCondition)
+        {
+            if (filteringCondition.Level == UserLevel.Undefined && string.IsNullOrEmpty(filteringCondition.Location))
+            {
+                return null;
+            }
+
+            if (filteringCondition.Level == UserLevel.Undefined && !string.IsNullOrEmpty(filteringCondition.Location))
+            {
+                return (u) => u.Location == filteringCondition.Location;
+            }
+
+            if (filteringCondition.Level != UserLevel.Undefined && string.IsNullOrEmpty(filteringCondition.Location))
+            {
+                return (u) => u.Level == filteringCondition.Level;
+            }
+            return (u) => u.Level == filteringCondition.Level && u.Location == filteringCondition.Location;
         }
     }
 }

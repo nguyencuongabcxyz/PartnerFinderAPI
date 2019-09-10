@@ -28,6 +28,7 @@ namespace Data.Models
     {
         Beginner,
         Intermediate,
-        Advanced
+        Advanced,
+        Undefined
     }
 }
