@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
 using Service;
@@ -12,6 +14,7 @@ namespace PartnerFinder.Controllers
     [ServiceFilter(typeof(ObjectExistenceFilter))]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserInformationService _userInformationService;
@@ -23,6 +26,13 @@ namespace PartnerFinder.Controllers
             _userInformationService = userInformationService;
             _levelTestService = levelTestService;
             _unitOfWork = unitOfWork;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(string id)
+        {
+            var userInfo = await _userInformationService.GetOne(id);
+            return Ok(userInfo);
         }
 
         [HttpGet("{id}/checkInfo")]

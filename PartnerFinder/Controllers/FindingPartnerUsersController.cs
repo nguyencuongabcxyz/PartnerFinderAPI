@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
 using Service.Models;
@@ -9,6 +10,7 @@ namespace PartnerFinder.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ServiceFilter(typeof(ObjectExistenceFilter))]
+    [Authorize]
     public class FindingPartnerUsersController : ControllerBase
     {
         private readonly IFindingPartnerUserService _findingPartnerUserService;

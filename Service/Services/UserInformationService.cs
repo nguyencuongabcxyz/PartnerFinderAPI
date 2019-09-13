@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data.Models;
 using Data.Repositories;
 using Service.Models;
@@ -17,15 +18,18 @@ namespace Service.Services
         Task UpdateLevel(string id, UserLevel userLevel);
         Task AddWithEmptyInfo(string id, string name);
         Task<int> GetPercentageOfCompletedInfo(string id);
+        Task<UserInfoDto> GetOne(string id); 
         Expression<Func<UserInformation, bool>> HandleFilterCondition(FilteringUserConditionDto filteringCondition);
     }
     public class UserInformationService : IUserInformationService
     {
         private readonly IUserInformationRepository _userInformationRepo;
+        private readonly IMapper _mapper;
 
-        public UserInformationService(IUserInformationRepository userInformationRepo)
+        public UserInformationService(IUserInformationRepository userInformationRepo, IMapper mapper)
         {
             _userInformationRepo = userInformationRepo;
+            _mapper = mapper;
         }
 
         public async Task AddWithEmptyInfo(string id, string name)
@@ -93,6 +97,12 @@ namespace Service.Services
                 return (u) => u.Level == filteringCondition.Level;
             }
             return (u) => u.Level == filteringCondition.Level && u.Location == filteringCondition.Location;
+        }
+
+        public async Task<UserInfoDto> GetOne(string id)
+        {
+            var userInfoModel = await _userInformationRepo.GetOne(id);
+            return _mapper.Map<UserInfoDto>(userInfoModel);
         }
     }
 }

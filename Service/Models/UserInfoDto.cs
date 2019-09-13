@@ -1,12 +1,10 @@
-﻿using System;
+﻿using Data.Models;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Data.Models
+namespace Service.Models
 {
-    public class UserInformation
+    public class UserInfoDto
     {
-        [Key, ForeignKey(nameof(ApplicationUser))]
         public string UserId { get; set; }
         [Required]
         [MaxLength(20)]
@@ -22,16 +20,5 @@ namespace Data.Models
         public string EnglishSkill { get; set; }
         public string LearningSkill { get; set; }
         public string Expectation { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
-        public ApplicationUser User { get; set; }
-    }
-
-    public enum UserLevel
-    {
-        Beginner,
-        Intermediate,
-        Advanced,
-        Undefined
     }
 }

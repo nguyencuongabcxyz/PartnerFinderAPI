@@ -21,6 +21,9 @@ namespace Service
             CreateMap<Post, DashboardPostDto>();
             CreateMap<IEnumerable<UserInformation>, IEnumerable<DashboardPostDto>>();
             CreateMap<IEnumerable<Post>, IEnumerable<DashboardPostDto>>();
+
+            CreateMap<UserInformation, UserInfoDto>();
+            CreateMap<UserInfoDto, UserInformation>();
         }
     }
 }

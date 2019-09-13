@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
 using Service.Services;
@@ -8,6 +9,7 @@ namespace PartnerFinder.Controllers
     [ServiceFilter(typeof(ObjectExistenceFilter))]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PostsController : ControllerBase
     {
         private readonly IPostService _postService;
