@@ -60,5 +60,13 @@ namespace PartnerFinder.Controllers
             await _unitOfWork.Commit();
             return Ok(testResult);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PostUserInfo(string id,UserInfoDto userInfoDto)
+        {
+            var updatedUserInfoDto = await _userInformationService.Update(id, userInfoDto);
+            await _unitOfWork.Commit();
+            return Ok(updatedUserInfoDto);
+        }
     }
 }

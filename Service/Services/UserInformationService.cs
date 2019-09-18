@@ -18,7 +18,8 @@ namespace Service.Services
         Task UpdateLevel(string id, UserLevel userLevel);
         Task AddWithEmptyInfo(string id, string name);
         Task<int> GetPercentageOfCompletedInfo(string id);
-        Task<UserInfoDto> GetOne(string id); 
+        Task<UserInfoDto> GetOne(string id);
+        Task<UserInfoDto> Update(string id, UserInfoDto userInfoDto);
         Expression<Func<UserInformation, bool>> HandleFilterCondition(FilteringUserConditionDto filteringCondition);
     }
     public class UserInformationService : IUserInformationService
@@ -102,6 +103,18 @@ namespace Service.Services
         public async Task<UserInfoDto> GetOne(string id)
         {
             var userInfoModel = await _userInformationRepo.GetOne(id);
+            return _mapper.Map<UserInfoDto>(userInfoModel);
+        }
+
+        public async Task<UserInfoDto> Update(string id, UserInfoDto userInfoDto)
+        {
+            var userInfoModel = await _userInformationRepo.GetOne(id);
+            var tempVideo = userInfoModel.Video;
+            var tempAudio = userInfoModel.VoiceAudio;
+            _mapper.Map<UserInfoDto, UserInformation>(userInfoDto, userInfoModel);
+            userInfoModel.UpdatedDate = DateTime.Now;
+            userInfoModel.Video = tempVideo;
+            userInfoModel.VoiceAudio = tempAudio;
             return _mapper.Map<UserInfoDto>(userInfoModel);
         }
     }
