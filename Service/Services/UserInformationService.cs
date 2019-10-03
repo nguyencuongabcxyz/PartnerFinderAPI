@@ -20,6 +20,7 @@ namespace Service.Services
         Task<int> GetPercentageOfCompletedInfo(string id);
         Task<UserInfoDto> GetOne(string id);
         Task<UserInfoDto> Update(string id, UserInfoDto userInfoDto);
+        Task<UserInfoDto> UpdateMediaProfile(string id, MediaProfileDto mediaProfile);
         Expression<Func<UserInformation, bool>> HandleFilterCondition(FilteringUserConditionDto filteringCondition);
     }
     public class UserInformationService : IUserInformationService
@@ -68,7 +69,8 @@ namespace Service.Services
             var retrievedUserInfo = await _userInformationRepo.GetOne(id);
             if (retrievedUserInfo == null) return 0;
             var properties = typeof(UserInformation).GetProperties();
-            var totalProps = properties.Length;
+            //Subtract 1 for ApplicationUser property using for mapping model to DB layer
+            var totalProps = properties.Length - 1;
             var setValueProps = properties.Select(p => typeof(UserInformation).GetProperty(p.Name)?.GetValue(retrievedUserInfo))
                                           .Count(propValue => propValue != null);
 
@@ -109,12 +111,24 @@ namespace Service.Services
         public async Task<UserInfoDto> Update(string id, UserInfoDto userInfoDto)
         {
             var userInfoModel = await _userInformationRepo.GetOne(id);
-            var tempVideo = userInfoModel.Video;
-            var tempAudio = userInfoModel.VoiceAudio;
-            _mapper.Map<UserInfoDto, UserInformation>(userInfoDto, userInfoModel);
+            _mapper.Map(userInfoDto, userInfoModel);
             userInfoModel.UpdatedDate = DateTime.Now;
-            userInfoModel.Video = tempVideo;
-            userInfoModel.VoiceAudio = tempAudio;
+            return _mapper.Map<UserInfoDto>(userInfoModel);
+        }
+
+
+        public async Task<UserInfoDto> UpdateMediaProfile(string id, MediaProfileDto mediaProfile)
+        {
+            var userInfoModel = await _userInformationRepo.GetOne(id);
+            var mediaProps = typeof(MediaProfileDto).GetProperties();
+            foreach (var prop in mediaProps)
+            {
+                var mediaPropValue = typeof(MediaProfileDto).GetProperty(prop.Name)?.GetValue(mediaProfile);
+                if (mediaPropValue != null)
+                {
+                    typeof(UserInformation).GetProperty(prop.Name)?.SetValue(userInfoModel, mediaPropValue);
+                }
+            }
             return _mapper.Map<UserInfoDto>(userInfoModel);
         }
     }

@@ -13,6 +13,7 @@ namespace Service.Services
     public interface ITokenService
     {
         Task<string> GenerateToken(ApplicationUser user, string secretKey);
+        string GetClaimValue(ClaimsPrincipal claims, string claim);
     }
     public class TokenService : ITokenService
     {
@@ -41,6 +42,11 @@ namespace Service.Services
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
             var token = tokenHandler.WriteToken(securityToken);
             return token;
+        }
+
+        public string GetClaimValue(ClaimsPrincipal claims, string claim)
+        {
+            return claims.Claims.First(c => c.Type == claim).Value;
         }
     }
 }

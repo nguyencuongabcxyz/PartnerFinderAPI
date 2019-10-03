@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing.Matching;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using PartnerFinder.CustomFilters;
 using Service;
 using Service.Models;
@@ -15,7 +16,7 @@ namespace PartnerFinder.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class UsersController : ControllerBase
+    public class UsersController : CommonBaseController
     {
         private readonly IUserInformationService _userInformationService;
         private readonly ILevelTestService _levelTestService;
@@ -35,38 +36,51 @@ namespace PartnerFinder.Controllers
             return Ok(userInfo);
         }
 
-        [HttpGet("{id}/checkInfo")]
-        public async Task<IActionResult> CheckIfUserUpdateInfo(string id)
+        [HttpGet("check-info")]
+        public async Task<IActionResult> CheckIfUserUpdateInfo()
         {
+            var userId = GetUserId();
             try
             {
-                await _userInformationService.CheckInitializedInfo(id);
+                await _userInformationService.CheckInitializedInfo(userId);
             }
             catch (ObjectNotFoundException e)
             {
-                await _userInformationService.AddWithEmptyInfo(id, "");
+                await _userInformationService.AddWithEmptyInfo(userId, "");
                 await _unitOfWork.Commit();
             }
-            var completedInfoPercentage = await _userInformationService.GetPercentageOfCompletedInfo(id);
-            var isHavingLevel = await _userInformationService.CheckIfUserHaveSpecification(m => m.UserId == id && m.Level != null);
+            var completedInfoPercentage = await _userInformationService.GetPercentageOfCompletedInfo(userId);
+            var isHavingLevel = await _userInformationService.CheckIfUserHaveSpecification(m => m.UserId == userId && m.Level != null);
             return Ok(new { completedInfoPercentage, isHavingLevel });
         }
 
-        [HttpPatch("{id}/updateLevel")]
-        public async Task<IActionResult> UpdateLevel(string id, List<QuestionResultDto> questionResult)
-        { 
+        [HttpPatch("update-level")]
+        public async Task<IActionResult> UpdateLevel(List<QuestionResultDto> questionResult)
+        {
+            var userId = GetUserId();
             var testResult = await _levelTestService.GetResultAfterTest(questionResult);
-            await _userInformationService.UpdateLevel(id, testResult.Level);
+            await _userInformationService.UpdateLevel(userId, testResult.Level);
             await _unitOfWork.Commit();
             return Ok(testResult);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PostUserInfo(string id,UserInfoDto userInfoDto)
+        [HttpPut]
+        public async Task<IActionResult> PostUserInfo(UserInfoDto userInfoDto)
         {
-            var updatedUserInfoDto = await _userInformationService.Update(id, userInfoDto);
+            var userId = GetUserId();
+            var updatedUserInfoDto = await _userInformationService.Update(userId, userInfoDto);
             await _unitOfWork.Commit();
             return Ok(updatedUserInfoDto);
         }
+
+        [HttpPatch("update-media")]
+        public async Task<IActionResult> UpdateMediaProfile(MediaProfileDto mediaProfile)
+        {
+            var userId = GetUserId();
+            var updatedUserInfoDto = await _userInformationService.UpdateMediaProfile(userId, mediaProfile);
+            await _unitOfWork.Commit();
+            return Ok(updatedUserInfoDto);
+        }
+
     }
 }
