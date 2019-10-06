@@ -72,7 +72,7 @@ namespace Service.Services
             //Subtract 1 for ApplicationUser property using for mapping model to DB layer
             var totalProps = properties.Length - 1;
             var setValueProps = properties.Select(p => typeof(UserInformation).GetProperty(p.Name)?.GetValue(retrievedUserInfo))
-                                          .Count(propValue => propValue != null);
+                                          .Count(propValue => propValue != null && propValue != "");
 
             return (int)((setValueProps/(double)totalProps)*100);
         }
