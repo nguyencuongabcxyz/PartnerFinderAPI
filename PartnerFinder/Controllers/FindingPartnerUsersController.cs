@@ -1,7 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
+using PartnerFinder.Extensions;
 using Service.Models;
 using Service.Services;
 
@@ -11,7 +15,7 @@ namespace PartnerFinder.Controllers
     [ApiController]
     [ServiceFilter(typeof(ObjectExistenceFilter))]
     [Authorize]
-    public class FindingPartnerUsersController : ControllerBase
+    public class FindingPartnerUsersController : CommonBaseController
     {
         private readonly IFindingPartnerUserService _findingPartnerUserService;
         private readonly IUserInformationService _userInformationService;
@@ -24,19 +28,25 @@ namespace PartnerFinder.Controllers
         [HttpGet]
         public async Task<IActionResult> GetForPagination(int index, int size)
         {
+            var userId = GetUserId();
             var count = await _findingPartnerUserService.Count();
-            var findingPartnerUsers = await _findingPartnerUserService.GetForPagination(index, size);
+            var findingPartnerUsers = await _findingPartnerUserService.GetForPagination(userId, index, size);
+
             return Ok(new {partnerFinders = findingPartnerUsers, count});
         }
 
         [HttpGet("filter")]
         public async Task<IActionResult> GetWithFilteringCondition([FromQuery]FilteringUserConditionDto filteringCondition, int index, int size)
         {
-            var userInfos = await _userInformationService.GetManyWithCondition(_userInformationService.HandleFilterCondition(filteringCondition));
-
+            var userId = GetUserId();
+            Expression<Func<UserInformation, bool>> isAuthorizedUser = (u) => u.UserId != userId;
+            var handledCondition = _userInformationService.HandleFilterCondition(filteringCondition);
+            var combinedCondition = isAuthorizedUser.AndAlso(handledCondition);
+            var userInfos = await _userInformationService.GetManyWithCondition(combinedCondition);
             var findingPartnerUsers = await _findingPartnerUserService
                 .GetForPaginationWithGivenUsers(userInfos, index, size);
             var count = await _findingPartnerUserService.CountWithGivenUsers(userInfos);
+
             return Ok(new {partnerFinders = findingPartnerUsers, count});
         }
     }

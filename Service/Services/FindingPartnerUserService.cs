@@ -13,7 +13,7 @@ namespace Service.Services
 {
     public interface IFindingPartnerUserService
     {
-        Task<IEnumerable<FindingPartnerUserDto>> GetForPagination(int index, int size = 6);
+        Task<IEnumerable<FindingPartnerUserDto>> GetForPagination(string userId, int index, int size = 6);
 
         Task<IEnumerable<FindingPartnerUserDto>> GetForPaginationWithGivenUsers(IEnumerable<UserInformation> users, int index, int size = 6);
         Task<int> Count();
@@ -44,11 +44,11 @@ namespace Service.Services
             return await _findingPartnerUserRepo.Count(condition);
         }
 
-        public async Task<IEnumerable<FindingPartnerUserDto>> GetForPagination(int index, int size = 6)
+        public async Task<IEnumerable<FindingPartnerUserDto>> GetForPagination(string userId, int index, int size = 6)
         {
             var findingPartnerPosts =
                 await _findingPartnerUserRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending,
-                    f => f.PostedDate, f => f.IsDeleted != true);
+                    f => f.PostedDate, f => f.IsDeleted != true && f.UserId != userId);
             return await MapModelToDtoModel(findingPartnerPosts);
         }
 
