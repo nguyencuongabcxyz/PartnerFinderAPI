@@ -17,6 +17,8 @@ namespace Service.Services
         Task<IEnumerable<DashboardPostDto>> GetFeedbackPostsForPagination(int index, int size = 8);
         Task<int> CountQuestionPosts();
         Task<int> CountFeedbackPosts();
+
+        Task<Post> AddQuestionPost(QuestionPostDto questionPostDto, string userId);
     }
     public class PostService : IPostService
     {
@@ -73,6 +75,17 @@ namespace Service.Services
             }
 
             return dashBoardPosts;
+        }
+
+        public async Task<Post> AddQuestionPost(QuestionPostDto questionPostDto, string userId)
+        {
+            var post = _mapper.Map<Post>(questionPostDto);
+            post.Type = PostType.Question;
+            post.UserId = userId;
+            post.CreatedDate = DateTime.UtcNow;
+            post.UpdatedDate = DateTime.UtcNow;
+            await _postRepo.Add(post);
+            return post;
         }
     }
 }

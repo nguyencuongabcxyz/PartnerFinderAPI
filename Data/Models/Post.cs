@@ -8,7 +8,9 @@ namespace Data.Models
     {
         public int Id { get; set; }
         [Required]
+        [MaxLength(200)]
         public string Title { get; set; }
+        [MaxLength(1000)]
         public string Content { get; set; }
         public string Image { get; set; }
         public string Audio { get; set; }
