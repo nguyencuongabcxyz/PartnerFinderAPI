@@ -24,17 +24,17 @@ namespace PartnerFinder.Controllers
         }
 
         [HttpGet("question-posts")]
-        public async Task<IActionResult> GetQuestionPostsForPagination(int index, int size)
+        public async Task<IActionResult> GetQuestionPostsForDashboard(int index, int size)
         {
-            var questionPosts = await _postService.GetQuestionPostsForPagination(index, size);
+            var questionPosts = await _postService.GetQuestionPostsForDashboard(index, size);
             var count = await _postService.CountQuestionPosts();
             return Ok(new {questionPosts, count});
         }
 
         [HttpGet("feedback-posts")]
-        public async Task<IActionResult> GetFeedbackPostsForPagination(int index, int size)
+        public async Task<IActionResult> GetFeedbackPostsForDashboard(int index, int size)
         {
-            var feedbackPosts = await _postService.GetFeedbackPostsForPagination(index, size);
+            var feedbackPosts = await _postService.GetFeedbackPostsForDashboard(index, size);
             var count = await _postService.CountFeedbackPosts();
             return Ok(new { feedbackPosts, count });
         }
@@ -46,6 +46,13 @@ namespace PartnerFinder.Controllers
             var post = await _postService.AddQuestionPost(questionPost, userId);
             await _unitOfWork.Commit();
             return Ok(post);
+        }
+
+        [HttpGet("{id}/question-post")]
+        public async Task<IActionResult> GetQuestionPost(int id)
+        {
+            var questionPost = await _postService.GetQuestionPost(id);
+            return Ok(questionPost);
         }
     }
 }

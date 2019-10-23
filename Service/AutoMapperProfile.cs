@@ -27,6 +27,12 @@ namespace Service
 
             CreateMap<QuestionPostDto, Post>();
             CreateMap<Post, QuestionPostDto>();
+
+            CreateMap<QuestionPostDetailDto, Post>();
+            CreateMap<Post, QuestionPostDetailDto>();
+
+            CreateMap<UserInformation, QuestionPostDetailDto>();
+            CreateMap<QuestionPostDetailDto, UserInformation>();
         }
     }
 }
