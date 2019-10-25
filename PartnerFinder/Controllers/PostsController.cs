@@ -45,14 +45,15 @@ namespace PartnerFinder.Controllers
             var userId = GetUserId();
             var post = await _postService.AddQuestionPost(questionPost, userId);
             await _unitOfWork.Commit();
-            return Ok(post);
+            var questionPostDetail = await _postService.MapPostToQuestionPostDetail(post);
+            return Ok(questionPostDetail);
         }
 
         [HttpGet("{id}/question-post")]
         public async Task<IActionResult> GetQuestionPost(int id)
         {
-            var questionPost = await _postService.GetQuestionPost(id);
-            return Ok(questionPost);
+            var questionPostDetail = await _postService.GetQuestionPost(id);
+            return Ok(questionPostDetail);
         }
     }
 }

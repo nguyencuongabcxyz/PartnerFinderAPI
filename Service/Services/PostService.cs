@@ -18,7 +18,8 @@ namespace Service.Services
         Task<int> CountQuestionPosts();
         Task<int> CountFeedbackPosts();
 
-        Task<QuestionPostDetailDto> AddQuestionPost(QuestionPostDto questionPostDto, string userId);
+        Task<Post> AddQuestionPost(QuestionPostDto questionPostDto, string userId);
+        Task<QuestionPostDetailDto> MapPostToQuestionPostDetail(Post post);
         Task<QuestionPostDetailDto> GetQuestionPost(int id);
     }
     public class PostService : IPostService
@@ -78,31 +79,30 @@ namespace Service.Services
             return dashBoardPosts;
         }
 
-        public async Task<QuestionPostDetailDto> AddQuestionPost(QuestionPostDto questionPostDto, string userId)
+        public async Task<Post> AddQuestionPost(QuestionPostDto questionPostDto, string userId)
         {
             var post = _mapper.Map<Post>(questionPostDto);
             post.Type = PostType.Question;
             post.UserId = userId;
             post.CreatedDate = DateTime.UtcNow;
             post.UpdatedDate = DateTime.UtcNow;
-            _postRepo.Add(post);
-            var addedPost = post;
-            // return addedPost;
-            var userInfo = await _userInformationRepo.GetOne(userId);
-            var questionPostDetail = _mapper.Map<QuestionPostDetailDto>(userInfo)
-                .Map(addedPost, _mapper);
-            return questionPostDetail;
-            // return post;
+            await _postRepo.Add(post);
+            return post;
         }
 
-        public async Task<QuestionPostDetailDto> GetQuestionPost(int id)
+        public async Task<QuestionPostDetailDto> MapPostToQuestionPostDetail(Post post)
         {
-            var post = await _postRepo.GetOne(id);
             var userInfo = await _userInformationRepo.GetOne(post.UserId);
             var questionPostDetail = _mapper.Map<QuestionPostDetailDto>(userInfo)
                 .Map(post, _mapper);
             questionPostDetail.AnswerNumber = await _commentRepo.Count(c => c.PostId == post.Id);
             return questionPostDetail;
+        }
+
+        public async Task<QuestionPostDetailDto> GetQuestionPost(int id)
+        {
+            var post = await _postRepo.GetOne(id);
+            return await MapPostToQuestionPostDetail(post);
         }
 
 
