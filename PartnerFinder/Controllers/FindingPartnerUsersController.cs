@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Data.Models;
@@ -43,9 +44,10 @@ namespace PartnerFinder.Controllers
             var handledCondition = _userInformationService.HandleFilterCondition(filteringCondition);
             var combinedCondition = isAuthorizedUser.AndAlso(handledCondition);
             var userInfos = await _userInformationService.GetManyWithCondition(combinedCondition);
+            var userInformations = userInfos.ToList();
             var findingPartnerUsers = await _findingPartnerUserService
-                .GetForPaginationWithGivenUsers(userInfos, index, size);
-            var count = await _findingPartnerUserService.CountWithGivenUsers(userInfos);
+                .GetForPaginationWithGivenUsers(userInformations, index, size);
+            var count = await _findingPartnerUserService.CountWithGivenUsers(userInformations);
 
             return Ok(new {partnerFinders = findingPartnerUsers, count});
         }

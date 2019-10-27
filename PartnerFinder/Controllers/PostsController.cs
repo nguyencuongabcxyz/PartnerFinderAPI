@@ -15,12 +15,14 @@ namespace PartnerFinder.Controllers
     public class PostsController : CommonBaseController
     {
         private readonly IPostService _postService;
+        private readonly ICommentService _commentService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PostsController(IPostService postService, IUnitOfWork unitOfWork)
+        public PostsController(IPostService postService, IUnitOfWork unitOfWork, ICommentService commentService)
         {
             _postService = postService;
             _unitOfWork = unitOfWork;
+            _commentService = commentService;
         }
 
         [HttpGet("question-posts")]
@@ -54,6 +56,13 @@ namespace PartnerFinder.Controllers
         {
             var questionPostDetail = await _postService.GetQuestionPost(id);
             return Ok(questionPostDetail);
+        }
+
+        [HttpGet("{id}/comments")]
+        public async Task<IActionResult> GetPostComments(int id)
+        {
+            var comments = await _commentService.GetPostComments(id);
+            return Ok(comments);
         }
     }
 }

@@ -29,10 +29,10 @@ namespace Data.Repositories
 
         public async Task<LevelTest> GetOneWithQuestionsAndAnswerOptions(int id)
         {
-            var levelTest = EntitiesSet.Where(t => t.Id == id && t.IsDeleted != true)
+            var levelTest = await EntitiesSet.Where(t => t.Id == id && t.IsDeleted != true)
                 .Include(t => t.Questions)
                     .ThenInclude(q => q.AnswerOptions).FirstOrDefaultAsync();
-            return await levelTest;
+            return levelTest;
         }
 
     }

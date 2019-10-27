@@ -72,7 +72,7 @@ namespace Service.Services
                 var userInfo = await _userInformationRepo.GetOne(post.UserId);
                 var dashBoardPost = _mapper.Map<DashboardPostDto>(userInfo)
                                            .Map(post, _mapper);
-                dashBoardPost.AnswerNumber = await _commentRepo.Count(c => c.PostId == post.Id);
+                dashBoardPost.AnswerNumber = await _commentRepo.CountComments(c => c.PostId == post.Id);
                 dashBoardPosts.Add(dashBoardPost);
             }
 
@@ -95,7 +95,7 @@ namespace Service.Services
             var userInfo = await _userInformationRepo.GetOne(post.UserId);
             var questionPostDetail = _mapper.Map<QuestionPostDetailDto>(userInfo)
                 .Map(post, _mapper);
-            questionPostDetail.AnswerNumber = await _commentRepo.Count(c => c.PostId == post.Id);
+            questionPostDetail.AnswerNumber = await _commentRepo.CountComments(c => c.PostId == post.Id);
             return questionPostDetail;
         }
 

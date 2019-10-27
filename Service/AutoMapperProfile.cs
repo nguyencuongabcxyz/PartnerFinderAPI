@@ -33,6 +33,15 @@ namespace Service
 
             CreateMap<UserInformation, QuestionPostDetailDto>();
             CreateMap<QuestionPostDetailDto, UserInformation>();
+
+            CreateMap<ResponseCommentDto, UserInformation>();
+            CreateMap<UserInformation, ResponseCommentDto>();
+
+            CreateMap<ResponseCommentDto, Comment>();
+            CreateMap<Comment, ResponseCommentDto>();
+
+            CreateMap<RequestCommentDto, Comment>();
+            CreateMap<Comment, ResponseCommentDto>();
         }
     }
 }
