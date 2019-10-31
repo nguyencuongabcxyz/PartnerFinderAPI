@@ -19,8 +19,11 @@ namespace Service.Services
         Task<int> CountFeedbackPosts();
 
         Task<Post> AddQuestionPost(QuestionPostDto questionPostDto, string userId);
+        Task<Post> AddFeedbackPost(FeedbackPostDto feedbackPostDto, string userId);
         Task<QuestionPostDetailDto> MapPostToQuestionPostDetail(Post post);
+        Task<FeedbackPostDetailDto> MapPostToFeedbackPostDetail(Post post);
         Task<QuestionPostDetailDto> GetQuestionPost(int id);
+        Task<FeedbackPostDetailDto> GetFeedbackPost(int id);
     }
     public class PostService : IPostService
     {
@@ -90,6 +93,16 @@ namespace Service.Services
             return post;
         }
 
+        public async Task<Post> AddFeedbackPost(FeedbackPostDto feedbackPostDto, string userId)
+        {
+            var post = _mapper.Map<Post>(feedbackPostDto);
+            post.UserId = userId;
+            post.CreatedDate = DateTime.UtcNow;
+            post.UpdatedDate = DateTime.UtcNow;
+            await _postRepo.Add(post);
+            return post;
+        }
+
         public async Task<QuestionPostDetailDto> MapPostToQuestionPostDetail(Post post)
         {
             var userInfo = await _userInformationRepo.GetOne(post.UserId);
@@ -99,12 +112,25 @@ namespace Service.Services
             return questionPostDetail;
         }
 
+        public async Task<FeedbackPostDetailDto> MapPostToFeedbackPostDetail(Post post)
+        {
+            var userInfo = await _userInformationRepo.GetOne(post.UserId);
+            var feedbackPostDetail = _mapper.Map<FeedbackPostDetailDto>(userInfo)
+                .Map(post, _mapper);
+            feedbackPostDetail.AnswerNumber = await _commentRepo.CountComments(c => c.PostId == post.Id);
+            return feedbackPostDetail;
+        }
+
         public async Task<QuestionPostDetailDto> GetQuestionPost(int id)
         {
             var post = await _postRepo.GetOne(id);
             return await MapPostToQuestionPostDetail(post);
         }
 
-
+        public async Task<FeedbackPostDetailDto> GetFeedbackPost(int id)
+        {
+            var post = await _postRepo.GetOne(id);
+            return await MapPostToFeedbackPostDetail(post);
+        }
     }
 }

@@ -51,6 +51,16 @@ namespace PartnerFinder.Controllers
             return Ok(questionPostDetail);
         }
 
+        [HttpPost("feedback-post")]
+        public async Task<IActionResult> PostFeedbackPost(FeedbackPostDto feedbackPost)
+        {
+            var userId = GetUserId();
+            var post = await _postService.AddFeedbackPost(feedbackPost, userId);
+            await _unitOfWork.Commit();
+            var feedbackPostDetail = await _postService.MapPostToFeedbackPostDetail(post);
+            return Ok(feedbackPostDetail);
+        }
+
         [HttpGet("{id}/question-post")]
         public async Task<IActionResult> GetQuestionPost(int id)
         {
@@ -63,6 +73,13 @@ namespace PartnerFinder.Controllers
         {
             var comments = await _commentService.GetPostComments(id);
             return Ok(comments);
+        }
+
+        [HttpGet("{id}/feedback-post")]
+        public async Task<IActionResult> GetFeedbackPost(int id)
+        {
+            var feedbackPostDetail = await _postService.GetFeedbackPost(id);
+            return Ok(feedbackPostDetail);
         }
     }
 }

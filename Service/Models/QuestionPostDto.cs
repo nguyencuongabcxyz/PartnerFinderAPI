@@ -8,7 +8,7 @@ namespace Service.Models
         [MaxLength(200)]
         public string Title { get; set; }
         [Required]
-        [MaxLength(1000)]
+        [MaxLength(2000)]
         public string Content { get; set; }
     }
 }

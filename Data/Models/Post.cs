@@ -10,11 +10,13 @@ namespace Data.Models
         [Required]
         [MaxLength(200)]
         public string Title { get; set; }
-        [MaxLength(1000)]
+        [Required]
+        [MaxLength(2000)]
         public string Content { get; set; }
         public string Image { get; set; }
         public string Audio { get; set; }
         public string Video { get; set; }
+        [MaxLength(1500)]
         public string Script { get; set; }
         [Required]
         public PostType Type { get; set; }

@@ -42,6 +42,11 @@ namespace Service
 
             CreateMap<RequestCommentDto, Comment>();
             CreateMap<Comment, ResponseCommentDto>();
+
+            CreateMap<FeedbackPostDto, Post>();
+
+            CreateMap<Post, FeedbackPostDetailDto>();
+            CreateMap<UserInformation, FeedbackPostDetailDto>();
         }
     }
 }
