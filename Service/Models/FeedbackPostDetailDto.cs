@@ -12,6 +12,7 @@ namespace Service.Models
         public string Video { get; set; }
         public string Script { get; set; }
         public int AnswerNumber { get; set; }
+        public int UpVote { get; set; }
         public DateTime UpdatedDate { get; set; }
         public DateTime CreatedDate { get; set; }
         public string UserId { get; set; }

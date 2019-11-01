@@ -12,6 +12,7 @@ namespace Service.Models
         public string Title { get; set; }
         public string Content { get; set; }
         public int AnswerNumber { get; set; }
+        public int UpVote { get; set; }
         public DateTime UpdatedDate { get; set; }
         public DateTime CreatedDate { get; set; }
         public string UserId { get; set; }

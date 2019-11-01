@@ -4,14 +4,16 @@ using Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191101031126_AddUpvoteField")]
+    partial class AddUpvoteField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,30 +308,6 @@ namespace Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("Data.Models.PostReaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Content");
-
-                    b.Property<int?>("PostId");
-
-                    b.Property<int>("Type");
-
-                    b.Property<string>("UserId")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PostReactions");
                 });
 
             modelBuilder.Entity("Data.Models.Question", b =>
@@ -689,18 +667,6 @@ namespace Data.Migrations
                 {
                     b.HasOne("Data.Models.ApplicationUser", "User")
                         .WithMany("Posts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Data.Models.PostReaction", b =>
-                {
-                    b.HasOne("Data.Models.Post", "Post")
-                        .WithMany("PostReactions")
-                        .HasForeignKey("PostId");
-
-                    b.HasOne("Data.Models.ApplicationUser", "User")
-                        .WithMany("PostReactions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

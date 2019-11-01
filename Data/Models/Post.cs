@@ -23,12 +23,14 @@ namespace Data.Models
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
+        public int Upvote { get; set; }
         public bool IsClosed { get; set; }
         [Required]
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Notification> Notifications { get; set; }
+        public ICollection<PostReaction> PostReactions { get; set; }
     }
 
     public enum PostType

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
@@ -17,12 +18,14 @@ namespace PartnerFinder.Controllers
         private readonly IPostService _postService;
         private readonly ICommentService _commentService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPostReactionService _postReactionService;
 
-        public PostsController(IPostService postService, IUnitOfWork unitOfWork, ICommentService commentService)
+        public PostsController(IPostService postService, IUnitOfWork unitOfWork, ICommentService commentService, IPostReactionService postReactionService)
         {
             _postService = postService;
             _unitOfWork = unitOfWork;
             _commentService = commentService;
+            _postReactionService = postReactionService;
         }
 
         [HttpGet("question-posts")]
@@ -80,6 +83,22 @@ namespace PartnerFinder.Controllers
         {
             var feedbackPostDetail = await _postService.GetFeedbackPost(id);
             return Ok(feedbackPostDetail);
+        }
+
+        [HttpPatch("{id}/question-post/up-vote")]
+        public async Task<IActionResult> UpdateUpVotePost(int id)
+        {
+            var userId = GetUserId();
+            var questionPostDetail = await _postService.UpdateQuestionPostVote(id, userId, PostReactionType.UpVote);
+            return Ok(questionPostDetail);
+        }
+
+        [HttpGet("{id}/check-vote")]
+        public async Task<IActionResult> CheckIfUserLikedPost(int id)
+        {
+            var userId = GetUserId();
+            var isVoted = await _postService.CheckIfUserVoted(id, userId);
+            return Ok(new {isVoted});
         }
     }
 }

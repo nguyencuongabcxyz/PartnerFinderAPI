@@ -15,6 +15,7 @@ namespace Data.Models
         public ICollection<Post> Posts { get; set; }
         public ICollection<LevelTest> LevelTests { get; set; }
         public ICollection<Comment> Comments { get; set; }
+        public ICollection<PostReaction> PostReactions { get; set; }
 
         //RequestPartner relationship
         [InverseProperty("Sender")]
@@ -45,6 +46,7 @@ namespace Data.Models
         public ICollection<Notification> Notifications { get; set; }
         [InverseProperty("Creator")]
         public ICollection<Notification> NotificationsAsCreator { get; set; } //this is for creating relation in DB not necessary for query
+
 
     }
 }

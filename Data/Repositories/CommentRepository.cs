@@ -11,7 +11,6 @@ namespace Data.Repositories
     public interface ICommentRepository : IBaseRepository<Comment>
     {
         Task<IEnumerable<Comment>> GetManyWithSubComment(Expression<Func<Comment, bool>> condition);
-        Task<int> CountComments(Expression<Func<Comment, bool>> condition);
     }
     public class CommentRepository : BaseRepository<Comment>, ICommentRepository
     {
@@ -20,7 +19,7 @@ namespace Data.Repositories
             
         }
 
-        public async Task<int> CountComments(Expression<Func<Comment, bool>> condition)
+        public override async Task<int> Count(Expression<Func<Comment, bool>> condition = null)
         {
             var comments = await GetManyWithSubComment(condition);
             var enumerable = comments.ToList();

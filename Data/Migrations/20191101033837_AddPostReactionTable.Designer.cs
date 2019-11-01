@@ -4,14 +4,16 @@ using Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191101033837_AddPostReactionTable")]
+    partial class AddPostReactionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -317,8 +319,6 @@ namespace Data.Migrations
                     b.Property<string>("Content");
 
                     b.Property<int?>("PostId");
-
-                    b.Property<int>("Type");
 
                     b.Property<string>("UserId")
                         .IsRequired();

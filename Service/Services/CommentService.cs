@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Models;
@@ -14,6 +15,7 @@ namespace Service.Services
     {
         Task<IEnumerable<ResponseCommentDto>> GetPostComments(int postId);
         Task<Comment> AddOne(RequestCommentDto requestComment);
+        Task<int> Count(Expression<Func<Comment, bool>> condition);
         Task<ResponseCommentDto> MapModelToResponseComment(Comment comment);
     }
     public class CommentService : ICommentService
@@ -48,6 +50,11 @@ namespace Service.Services
             comment.CreatedDate = DateTime.UtcNow;
             await _commentRepo.Add(comment);
             return comment;
+        }
+
+        public async Task<int> Count(Expression<Func<Comment, bool>> condition)
+        {
+            return await _commentRepo.Count(condition);
         }
 
         public async Task<ResponseCommentDto> MapModelToResponseComment(Comment comment)

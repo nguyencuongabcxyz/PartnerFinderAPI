@@ -86,7 +86,7 @@ namespace Data.Repositories
             EntitiesSet.RemoveRange(entities);
         }
 
-        public async Task<int> Count(Expression<Func<T, bool>> condition = null)
+        public virtual async Task<int> Count(Expression<Func<T, bool>> condition = null)
         {
             if (condition == null)
             {

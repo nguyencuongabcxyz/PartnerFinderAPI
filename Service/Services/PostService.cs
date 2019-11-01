@@ -24,20 +24,27 @@ namespace Service.Services
         Task<FeedbackPostDetailDto> MapPostToFeedbackPostDetail(Post post);
         Task<QuestionPostDetailDto> GetQuestionPost(int id);
         Task<FeedbackPostDetailDto> GetFeedbackPost(int id);
+        Task<QuestionPostDetailDto> UpdateQuestionPostVote(int postId, string userId, PostReactionType type);
+        Task<bool> CheckIfUserVoted(int postId, string userId);
     }
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepo;
-        private readonly ICommentRepository _commentRepo;
         private readonly IUserInformationRepository _userInformationRepo;
-        private readonly IMapper _mapper;
 
-        public PostService(IPostRepository postRepo, ICommentRepository commentRepo, IUserInformationRepository userInformationRepo, IMapper mapper)
+        private readonly ICommentService _commentService;
+        private readonly IPostReactionService _postReactionService;
+        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
+
+        public PostService(IPostRepository postRepo, IUserInformationRepository userInformationRepo, IMapper mapper, ICommentService commentService, IPostReactionService postReactionService, IUnitOfWork unitOfWork)
         {
             _postRepo = postRepo;
-            _commentRepo = commentRepo;
             _userInformationRepo = userInformationRepo;
             _mapper = mapper;
+            _commentService = commentService;
+            _postReactionService = postReactionService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<int> CountQuestionPosts()
@@ -75,7 +82,7 @@ namespace Service.Services
                 var userInfo = await _userInformationRepo.GetOne(post.UserId);
                 var dashBoardPost = _mapper.Map<DashboardPostDto>(userInfo)
                                            .Map(post, _mapper);
-                dashBoardPost.AnswerNumber = await _commentRepo.CountComments(c => c.PostId == post.Id);
+                dashBoardPost.AnswerNumber = await _commentService.Count(c => c.PostId == post.Id);
                 dashBoardPosts.Add(dashBoardPost);
             }
 
@@ -108,7 +115,8 @@ namespace Service.Services
             var userInfo = await _userInformationRepo.GetOne(post.UserId);
             var questionPostDetail = _mapper.Map<QuestionPostDetailDto>(userInfo)
                 .Map(post, _mapper);
-            questionPostDetail.AnswerNumber = await _commentRepo.CountComments(c => c.PostId == post.Id);
+            questionPostDetail.AnswerNumber = await _commentService.Count(c => c.PostId == post.Id);
+            questionPostDetail.UpVote = await _postReactionService.Count(r => r.PostId == post.Id);
             return questionPostDetail;
         }
 
@@ -117,7 +125,8 @@ namespace Service.Services
             var userInfo = await _userInformationRepo.GetOne(post.UserId);
             var feedbackPostDetail = _mapper.Map<FeedbackPostDetailDto>(userInfo)
                 .Map(post, _mapper);
-            feedbackPostDetail.AnswerNumber = await _commentRepo.CountComments(c => c.PostId == post.Id);
+            feedbackPostDetail.AnswerNumber = await _commentService.Count(c => c.PostId == post.Id);
+            feedbackPostDetail.UpVote = await _postReactionService.Count(r => r.PostId == post.Id);
             return feedbackPostDetail;
         }
 
@@ -131,6 +140,26 @@ namespace Service.Services
         {
             var post = await _postRepo.GetOne(id);
             return await MapPostToFeedbackPostDetail(post);
+        }
+
+        public async Task<QuestionPostDetailDto> UpdateQuestionPostVote(int postId, string userId, PostReactionType type)
+        {
+            var post = await _postRepo.GetOne(postId);
+            var reactionCountOfUser = await _postReactionService.Count(r => r.UserId == userId && r.PostId == postId);
+            if (reactionCountOfUser != 0)
+            {
+                return await MapPostToQuestionPostDetail(post);
+            }
+            await _postReactionService.AddOne(postId, userId, type);
+            await _unitOfWork.Commit();
+            post.Upvote = await _postReactionService.Count(r => r.PostId == postId);
+            return await MapPostToQuestionPostDetail(post);
+        }
+
+        public async Task<bool> CheckIfUserVoted(int postId, string userId)
+        {
+            var reactionCountOfUser = await _postReactionService.Count(r => r.UserId == userId && r.PostId == postId);
+            return reactionCountOfUser > 0;
         }
     }
 }
