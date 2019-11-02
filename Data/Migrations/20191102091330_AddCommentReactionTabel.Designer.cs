@@ -4,14 +4,16 @@ using Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191102091330_AddCommentReactionTabel")]
+    partial class AddCommentReactionTabel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,6 +314,8 @@ namespace Data.Migrations
                         .HasMaxLength(200);
 
                     b.Property<int>("Type");
+
+                    b.Property<int>("UpVote");
 
                     b.Property<DateTime>("UpdatedDate");
 

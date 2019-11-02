@@ -16,6 +16,7 @@ namespace Data.Models
         public ICollection<LevelTest> LevelTests { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<PostReaction> PostReactions { get; set; }
+        public ICollection<CommentReaction> CommentReactions { get; set; }
 
         //RequestPartner relationship
         [InverseProperty("Sender")]

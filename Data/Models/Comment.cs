@@ -19,5 +19,6 @@ namespace Data.Models
         public int? ParentId { get; set; }
         public Comment Parent { get; set; }
         public ICollection<Comment> SubComments { get; set; }
+        public ICollection<CommentReaction> CommentReactions { get; set; }
     }
 }

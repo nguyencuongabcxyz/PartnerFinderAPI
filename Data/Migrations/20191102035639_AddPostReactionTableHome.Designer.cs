@@ -4,14 +4,16 @@ using Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191102035639_AddPostReactionTableHome")]
+    partial class AddPostReactionTableHome
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,27 +97,6 @@ namespace Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("Data.Models.CommentReaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CommentId");
-
-                    b.Property<int>("Type");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CommentReactions");
                 });
 
             modelBuilder.Entity("Data.Models.FindingPartnerUser", b =>
@@ -312,6 +293,8 @@ namespace Data.Migrations
                         .HasMaxLength(200);
 
                     b.Property<int>("Type");
+
+                    b.Property<int>("UpVote");
 
                     b.Property<DateTime>("UpdatedDate");
 
@@ -630,18 +613,6 @@ namespace Data.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Data.Models.CommentReaction", b =>
-                {
-                    b.HasOne("Data.Models.Comment", "Comment")
-                        .WithMany("CommentReactions")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Data.Models.ApplicationUser", "User")
-                        .WithMany("CommentReactions")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Data.Models.FindingPartnerUser", b =>

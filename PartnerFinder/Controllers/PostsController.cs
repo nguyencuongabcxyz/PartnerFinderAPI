@@ -86,11 +86,19 @@ namespace PartnerFinder.Controllers
         }
 
         [HttpPatch("{id}/question-post/up-vote")]
-        public async Task<IActionResult> UpdateUpVotePost(int id)
+        public async Task<IActionResult> UpdateUpVoteQuestionPost(int id)
         {
             var userId = GetUserId();
-            var questionPostDetail = await _postService.UpdateQuestionPostVote(id, userId, PostReactionType.UpVote);
+            var questionPostDetail = await _postService.SwitchQuestionPostVote(id, userId, PostReactionType.UpVote);
             return Ok(questionPostDetail);
+        }
+
+        [HttpPatch("{id}/feedback-post/up-vote")]
+        public async Task<IActionResult> UpdateUpVoteFeedbackPost(int id)
+        {
+            var userId = GetUserId();
+            var feedbackPostDetail = await _postService.SwitchFeedbackPostVote(id, userId, PostReactionType.UpVote);
+            return Ok(feedbackPostDetail);
         }
 
         [HttpGet("{id}/check-vote")]

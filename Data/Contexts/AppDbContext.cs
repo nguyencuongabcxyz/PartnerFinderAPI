@@ -53,5 +53,6 @@ namespace Data.Contexts
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<PostReaction> PostReactions { get; set; }
+        public DbSet<CommentReaction> CommentReactions { get; set; }
     }
 }

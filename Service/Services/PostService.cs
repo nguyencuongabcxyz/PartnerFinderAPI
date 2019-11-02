@@ -24,7 +24,8 @@ namespace Service.Services
         Task<FeedbackPostDetailDto> MapPostToFeedbackPostDetail(Post post);
         Task<QuestionPostDetailDto> GetQuestionPost(int id);
         Task<FeedbackPostDetailDto> GetFeedbackPost(int id);
-        Task<QuestionPostDetailDto> UpdateQuestionPostVote(int postId, string userId, PostReactionType type);
+        Task<QuestionPostDetailDto> SwitchQuestionPostVote(int postId, string userId, PostReactionType type);
+        Task<FeedbackPostDetailDto> SwitchFeedbackPostVote(int postId, string userId, PostReactionType type);
         Task<bool> CheckIfUserVoted(int postId, string userId);
     }
     public class PostService : IPostService
@@ -37,7 +38,8 @@ namespace Service.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PostService(IPostRepository postRepo, IUserInformationRepository userInformationRepo, IMapper mapper, ICommentService commentService, IPostReactionService postReactionService, IUnitOfWork unitOfWork)
+        public PostService(IPostRepository postRepo, IUserInformationRepository userInformationRepo, 
+            IMapper mapper, ICommentService commentService, IPostReactionService postReactionService, IUnitOfWork unitOfWork)
         {
             _postRepo = postRepo;
             _userInformationRepo = userInformationRepo;
@@ -107,6 +109,7 @@ namespace Service.Services
             post.CreatedDate = DateTime.UtcNow;
             post.UpdatedDate = DateTime.UtcNow;
             await _postRepo.Add(post);
+            await _unitOfWork.Commit();
             return post;
         }
 
@@ -142,18 +145,22 @@ namespace Service.Services
             return await MapPostToFeedbackPostDetail(post);
         }
 
-        public async Task<QuestionPostDetailDto> UpdateQuestionPostVote(int postId, string userId, PostReactionType type)
+        public async Task<QuestionPostDetailDto> SwitchQuestionPostVote(int postId, string userId, PostReactionType type)
         {
             var post = await _postRepo.GetOne(postId);
-            var reactionCountOfUser = await _postReactionService.Count(r => r.UserId == userId && r.PostId == postId);
-            if (reactionCountOfUser != 0)
-            {
-                return await MapPostToQuestionPostDetail(post);
-            }
-            await _postReactionService.AddOne(postId, userId, type);
+            await _postReactionService.SwitchReaction(postId, userId, type);
             await _unitOfWork.Commit();
-            post.Upvote = await _postReactionService.Count(r => r.PostId == postId);
-            return await MapPostToQuestionPostDetail(post);
+            var questionPostDetail = await MapPostToQuestionPostDetail(post);
+            return questionPostDetail;
+        }
+
+        public async Task<FeedbackPostDetailDto> SwitchFeedbackPostVote(int postId, string userId, PostReactionType type)
+        {
+            var post = await _postRepo.GetOne(postId);
+            await _postReactionService.SwitchReaction(postId, userId, type);
+            await _unitOfWork.Commit();
+            var feedbackPostDetail = await MapPostToFeedbackPostDetail(post);
+            return feedbackPostDetail;
         }
 
         public async Task<bool> CheckIfUserVoted(int postId, string userId)

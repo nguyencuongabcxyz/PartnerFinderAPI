@@ -14,6 +14,7 @@ namespace Service.Models
         public string UserId { get; set; }
         public string Name { get; set; }
         public string Avatar { get; set; }
+        public int Like { get; set; }
         public int? ParentId { get; set; }
         public List<ResponseCommentDto> SubComments { get; set; }
     }

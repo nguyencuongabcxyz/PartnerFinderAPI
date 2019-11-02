@@ -8,7 +8,7 @@ namespace Service.Services
 {
     public interface IPostReactionService
     {
-        Task AddOne(int postId, string userId, PostReactionType type);
+        Task SwitchReaction(int postId, string userId, PostReactionType type);
         Task<int> Count(Expression<Func<PostReaction, bool>> condition);
     }
     public class PostReactionService : IPostReactionService
@@ -20,8 +20,14 @@ namespace Service.Services
             _postReactionRepo = postReactionRepo;
         }
 
-        public async Task AddOne(int postId, string userId, PostReactionType type)
+        public async Task SwitchReaction(int postId, string userId, PostReactionType type)
         {
+            var existingReaction = await _postReactionRepo.GetOneByCondition(r => r.PostId == postId && r.UserId == userId);
+            if (existingReaction != null)
+            {
+                _postReactionRepo.Remove(existingReaction);
+                return;
+            }
             var postReaction = new PostReaction
             {
                 PostId = postId,

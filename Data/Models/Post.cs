@@ -23,7 +23,6 @@ namespace Data.Models
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
-        public int Upvote { get; set; }
         public bool IsClosed { get; set; }
         [Required]
         public string UserId { get; set; }
