@@ -10,6 +10,7 @@ namespace Service.Models
         public int Id { get; set; }
         public string Content { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool IsLiked { get; set; }
         public int? PostId { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }

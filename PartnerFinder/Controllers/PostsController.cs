@@ -20,7 +20,8 @@ namespace PartnerFinder.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPostReactionService _postReactionService;
 
-        public PostsController(IPostService postService, IUnitOfWork unitOfWork, ICommentService commentService, IPostReactionService postReactionService)
+        public PostsController(IPostService postService, IUnitOfWork unitOfWork, 
+            ICommentService commentService, IPostReactionService postReactionService)
         {
             _postService = postService;
             _unitOfWork = unitOfWork;
@@ -74,7 +75,8 @@ namespace PartnerFinder.Controllers
         [HttpGet("{id}/comments")]
         public async Task<IActionResult> GetPostComments(int id)
         {
-            var comments = await _commentService.GetPostComments(id);
+            var userId = GetUserId();
+            var comments = await _commentService.GetPostComments(id, userId);
             return Ok(comments);
         }
 
@@ -89,7 +91,9 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> UpdateUpVoteQuestionPost(int id)
         {
             var userId = GetUserId();
-            var questionPostDetail = await _postService.SwitchQuestionPostVote(id, userId, PostReactionType.UpVote);
+            var post = await _postService.SwitchPostVote(id, userId, PostReactionType.UpVote);
+            await _unitOfWork.Commit();
+            var questionPostDetail = await _postService.MapPostToQuestionPostDetail(post);
             return Ok(questionPostDetail);
         }
 
@@ -97,7 +101,9 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> UpdateUpVoteFeedbackPost(int id)
         {
             var userId = GetUserId();
-            var feedbackPostDetail = await _postService.SwitchFeedbackPostVote(id, userId, PostReactionType.UpVote);
+            var post = await _postService.SwitchPostVote(id, userId, PostReactionType.UpVote);
+            await _unitOfWork.Commit();
+            var feedbackPostDetail = await _postService.MapPostToFeedbackPostDetail(post);
             return Ok(feedbackPostDetail);
         }
 
@@ -106,7 +112,7 @@ namespace PartnerFinder.Controllers
         {
             var userId = GetUserId();
             var isVoted = await _postService.CheckIfUserVoted(id, userId);
-            return Ok(new {isVoted});
+            return Ok(isVoted);
         }
     }
 }

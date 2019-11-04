@@ -13,11 +13,15 @@ namespace Service.Services
 {
     public interface ICommentService
     {
-        Task<IEnumerable<ResponseCommentDto>> GetPostComments(int postId);
+        Task<IEnumerable<ResponseCommentDto>> GetPostComments(int postId, string currentUserId);
         Task<Comment> AddOne(RequestCommentDto requestComment);
         Task<int> Count(Expression<Func<Comment, bool>> condition);
-        Task<ResponseCommentDto> SwitchReaction(int id, string userId, CommentReactionType type); 
-        Task<ResponseCommentDto> MapModelToResponseComment(Comment comment);
+        Task<Comment> SwitchReaction(int id, string userId, CommentReactionType type);
+        Task<bool> CheckIfUserLiked(int id, string userId);
+        Task<ResponseCommentDto> MapModelToResponseComment(Comment comment, string currentUserId);
+
+        Task<List<ResponseCommentDto>> MapModelCollectionToResponseCommentCollection(
+            List<Comment> comments, string currentUserId);
     }
     public class CommentService : ICommentService
     {
@@ -26,31 +30,30 @@ namespace Service.Services
 
         private readonly ICommentReactionService _commentReactionService;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
         public CommentService(ICommentRepository commentRepo, IMapper mapper, 
             IUserInformationRepository userInformationRepo, 
-            ICommentReactionService commentReactionService, IUnitOfWork unitOfWork)
+            ICommentReactionService commentReactionService)
         {
             _commentRepo = commentRepo;
             _mapper = mapper;
             _userInformationRepo = userInformationRepo;
             _commentReactionService = commentReactionService;
-            _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<ResponseCommentDto>> GetPostComments(int postId)
+        public async Task<IEnumerable<ResponseCommentDto>> GetPostComments(int postId, string currentUserId)
         {
             var comments = await _commentRepo.GetManyWithSubComment(c => c.IsDeleted != true && c.PostId == postId);
             var commentList = comments.ToList();
-            var responseComments = await MapModelCollectionToResponseCommentCollection(commentList);
+            var responseComments = await MapModelCollectionToResponseCommentCollection(commentList, currentUserId);
             for (var i = 0; i < commentList.Count(); i++)
             {
                 responseComments[i].SubComments =
-                    await MapModelCollectionToResponseCommentCollection(commentList[i].SubComments.ToList());
+                    await MapModelCollectionToResponseCommentCollection(commentList[i].SubComments.ToList(), currentUserId);
             }
             return responseComments;
         }
+
 
         public async Task<Comment> AddOne(RequestCommentDto requestComment)
         {
@@ -65,30 +68,38 @@ namespace Service.Services
             return await _commentRepo.Count(condition);
         }
 
-        public async Task<ResponseCommentDto> SwitchReaction(int id, string userId, CommentReactionType type)
+        public async Task<Comment> SwitchReaction(int id, string userId, CommentReactionType type)
         {
-            var comment = await _commentRepo.GetOne(id);
+            var comment = await _commentRepo.GetOneWithSubComment(c => c.Id == id);
+            var isLiked = await CheckIfUserLiked(id, userId);
+            comment.Like = isLiked ? comment.Like - 1 : comment.Like + 1;
             await _commentReactionService.SwitchReaction(id, userId, type);
-            await _unitOfWork.Commit();
-            return await MapModelToResponseComment(comment);
+            return comment;
         }
 
-        public async Task<ResponseCommentDto> MapModelToResponseComment(Comment comment)
+        public async Task<bool> CheckIfUserLiked(int id, string userId)
+        {
+            var reactionCount = await _commentReactionService.Count(r => r.CommentId == id && r.UserId == userId);
+            return reactionCount > 0;
+        }
+
+
+        public async Task<ResponseCommentDto> MapModelToResponseComment(Comment comment, string currentUserId)
         {
             var userInfo = await _userInformationRepo.GetOne(comment.UserId);
             var responseComment = _mapper.Map<ResponseCommentDto>(userInfo)
                 .Map(comment, _mapper);
-            responseComment.Like = await _commentReactionService.Count(r => r.CommentId == comment.Id);
+            responseComment.IsLiked = await CheckIfUserLiked(comment.Id, currentUserId);
             return responseComment;
         }
 
-        private async Task<List<ResponseCommentDto>> MapModelCollectionToResponseCommentCollection(
-            List<Comment> comments)
+        public async Task<List<ResponseCommentDto>> MapModelCollectionToResponseCommentCollection(
+            List<Comment> comments, string currentUserId)
         {
             var responseComments = new List<ResponseCommentDto>();
             foreach (var comment in comments)
             {
-                var responseComment = await MapModelToResponseComment(comment);
+                var responseComment = await MapModelToResponseComment(comment, currentUserId);
                 responseComments.Add(responseComment);
             }
 

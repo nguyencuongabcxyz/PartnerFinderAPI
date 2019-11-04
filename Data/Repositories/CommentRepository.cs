@@ -11,6 +11,7 @@ namespace Data.Repositories
     public interface ICommentRepository : IBaseRepository<Comment>
     {
         Task<IEnumerable<Comment>> GetManyWithSubComment(Expression<Func<Comment, bool>> condition);
+        Task<Comment> GetOneWithSubComment(Expression<Func<Comment, bool>> condition);
     }
     public class CommentRepository : BaseRepository<Comment>, ICommentRepository
     {
@@ -33,6 +34,14 @@ namespace Data.Repositories
                 .Include(c => c.SubComments)
                 .ToListAsync();
             return comments;
+        }
+
+        public async Task<Comment> GetOneWithSubComment(Expression<Func<Comment, bool>> condition)
+        {
+            var comment = await EntitiesSet.Where(condition)
+                .Include(c => c.SubComments)
+                .FirstOrDefaultAsync();
+            return comment;
         }
     }
 }
