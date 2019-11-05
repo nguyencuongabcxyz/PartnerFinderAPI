@@ -30,7 +30,7 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> GetForPagination(int index, int size)
         {
             var userId = GetUserId();
-            var count = await _findingPartnerUserService.Count();
+            var count = await _findingPartnerUserService.Count(userId);
             var findingPartnerUsers = await _findingPartnerUserService.GetForPagination(userId, index, size);
 
             return Ok(new {partnerFinders = findingPartnerUsers, count});

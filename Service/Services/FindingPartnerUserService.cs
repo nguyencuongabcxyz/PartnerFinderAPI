@@ -16,7 +16,7 @@ namespace Service.Services
         Task<IEnumerable<FindingPartnerUserDto>> GetForPagination(string userId, int index, int size = 6);
 
         Task<IEnumerable<FindingPartnerUserDto>> GetForPaginationWithGivenUsers(IEnumerable<UserInformation> users, int index, int size = 6);
-        Task<int> Count();
+        Task<int> Count(string userId);
         Task<int> CountWithGivenUsers(IEnumerable<UserInformation> users);
     }
     public class FindingPartnerUserService : IFindingPartnerUserService
@@ -32,9 +32,9 @@ namespace Service.Services
             _mapper = mapper;
         }
 
-        public async Task<int> Count()
+        public async Task<int> Count(string userId)
         {
-            return await _findingPartnerUserRepo.Count(f => f.IsDeleted != true);
+            return await _findingPartnerUserRepo.Count(f => f.IsDeleted != true && f.UserId != userId);
         }
 
         public async Task<int> CountWithGivenUsers(IEnumerable<UserInformation> users)
