@@ -21,7 +21,6 @@ namespace Service.Services
         Task<UserInfoDto> GetOne(string id);
         Task<UserInfoDto> Update(string id, UserInfoDto userInfoDto);
         Task<UserInfoDto> UpdateMediaProfile(string id, MediaProfileDto mediaProfile);
-        Expression<Func<UserInformation, bool>> HandleFilterCondition(FilteringUserConditionDto filteringCondition);
     }
     public class UserInformationService : IUserInformationService
     {
@@ -81,25 +80,6 @@ namespace Service.Services
         {
             var userInfo = await _userInformationRepo.GetOne(id);
             userInfo.Level = userLevel;
-        }
-
-        public Expression<Func<UserInformation, bool>> HandleFilterCondition(FilteringUserConditionDto filteringCondition)
-        {
-            if (filteringCondition.Level == UserLevel.Undefined && string.IsNullOrEmpty(filteringCondition.Location))
-            {
-                return null;
-            }
-
-            if (filteringCondition.Level == UserLevel.Undefined && !string.IsNullOrEmpty(filteringCondition.Location))
-            {
-                return (u) => u.Location == filteringCondition.Location;
-            }
-
-            if (filteringCondition.Level != UserLevel.Undefined && string.IsNullOrEmpty(filteringCondition.Location))
-            {
-                return (u) => u.Level == filteringCondition.Level;
-            }
-            return (u) => u.Level == filteringCondition.Level && u.Location == filteringCondition.Location;
         }
 
         public async Task<UserInfoDto> GetOne(string id)
