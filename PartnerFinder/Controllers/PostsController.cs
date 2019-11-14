@@ -18,15 +18,13 @@ namespace PartnerFinder.Controllers
         private readonly IPostService _postService;
         private readonly ICommentService _commentService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IPostReactionService _postReactionService;
 
         public PostsController(IPostService postService, IUnitOfWork unitOfWork, 
-            ICommentService commentService, IPostReactionService postReactionService)
+            ICommentService commentService)
         {
             _postService = postService;
             _unitOfWork = unitOfWork;
             _commentService = commentService;
-            _postReactionService = postReactionService;
         }
 
         [HttpGet("question-posts")]
@@ -113,6 +111,20 @@ namespace PartnerFinder.Controllers
             var userId = GetUserId();
             var isVoted = await _postService.CheckIfUserVoted(id, userId);
             return Ok(isVoted);
+        }
+
+        [HttpGet("feedback-post/search")]
+        public async Task<IActionResult> SearchFeedbackPosts(string pattern)
+        {
+            var feedbackPosts = await _postService.SearchFeedbackPosts(pattern);
+            return Ok(feedbackPosts);
+        }
+
+        [HttpGet("question-post/search")]
+        public async Task<IActionResult> SearchQuestionPosts(string pattern)
+        {
+            var questionPosts = await _postService.SearchQuestionPosts(pattern);
+            return Ok(questionPosts);
         }
     }
 }

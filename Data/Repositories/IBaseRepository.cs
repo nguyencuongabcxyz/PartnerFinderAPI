@@ -17,7 +17,7 @@ namespace Data.Repositories
             Expression<Func<T, TU>> orderedKey, Expression<Func<T, bool>> condition);
         Task<IEnumerable<T>> GetAll();
         Task<T> GetOneByCondition(Expression<Func<T, bool>> condition);
-        Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> condition);
+        Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> condition, int? limit = null);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
 

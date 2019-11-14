@@ -1,11 +1,13 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Models;
 using Data.Repositories;
+using Service.Constants;
 using Service.Extensions;
 using Service.Models;
 
@@ -24,6 +26,8 @@ namespace Service.Services
         Task<FeedbackPostDetailDto> MapPostToFeedbackPostDetail(Post post);
         Task<QuestionPostDetailDto> GetQuestionPost(int id);
         Task<FeedbackPostDetailDto> GetFeedbackPost(int id);
+        Task<IEnumerable<FeedbackPostDetailDto>> SearchFeedbackPosts(string pattern);
+        Task<IEnumerable<QuestionPostDetailDto>> SearchQuestionPosts(string pattern);
         Task<Post> SwitchPostVote(int postId, string userId, PostReactionType type);
         Task<bool> CheckIfUserVoted(int postId, string userId);
     }
@@ -48,21 +52,24 @@ namespace Service.Services
 
         public async Task<int> CountQuestionPosts()
         {
-            return await _postRepo.Count(p => p.IsDeleted != true && p.Type == PostType.Question);
+            return await _postRepo.Count(p => p.IsDeleted != true 
+                                              && p.Type == PostType.Question);
         }
 
         public async Task<int> CountFeedbackPosts()
         {
-            Expression<Func<Post, bool>> condition = p => p.IsDeleted != true && (p.Type == PostType.SpokenFeedback || p.Type == PostType.WrittenFeedback);
+            Expression<Func<Post, bool>> condition = p => p.IsDeleted != true 
+                                                          && (p.Type == PostType.SpokenFeedback || p.Type == PostType.WrittenFeedback);
             return await _postRepo.Count(condition);
         }
 
         public async Task<IEnumerable<DashboardPostDto>> GetFeedbackPostsForDashboard(int index, int size = 8)
         {
-            Expression<Func<Post, bool>> condition = p => p.IsDeleted != true && (p.Type == PostType.WrittenFeedback || p.Type == PostType.SpokenFeedback);
+            Expression<Func<Post, bool>> condition = p => p.IsDeleted != true 
+                                                          && (p.Type == PostType.WrittenFeedback || p.Type == PostType.SpokenFeedback);
             var posts = await _postRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, p => p.UpdatedDate,
                 condition);
-            return await MapPostToDashboardPost(posts);
+            return await MapPostsToDashboardPosts(posts);
         }
 
         public async Task<IEnumerable<DashboardPostDto>> GetQuestionPostsForDashboard(int index, int size = 8)
@@ -70,10 +77,10 @@ namespace Service.Services
             Expression<Func<Post, bool>> condition = p => p.IsDeleted != true && p.Type == PostType.Question;
             var posts = await _postRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, p => p.UpdatedDate,
                 condition);
-            return await MapPostToDashboardPost(posts);
+            return await MapPostsToDashboardPosts(posts);
         }
 
-        private async Task<IEnumerable<DashboardPostDto>> MapPostToDashboardPost(IEnumerable<Post> posts)
+        private async Task<IEnumerable<DashboardPostDto>> MapPostsToDashboardPosts(IEnumerable<Post> posts)
         {
             var dashBoardPosts = new List<DashboardPostDto>();
             foreach (var post in posts)
@@ -118,6 +125,17 @@ namespace Service.Services
             return questionPostDetail;
         }
 
+        private async Task<IEnumerable<QuestionPostDetailDto>> MapPostsToQuestionPostsDetail(IEnumerable<Post> posts)
+        {
+            var questionPostsDetail = new List<QuestionPostDetailDto>();
+            foreach (var post in posts)
+            {
+                questionPostsDetail.Add(await MapPostToQuestionPostDetail(post));
+            }
+
+            return questionPostsDetail;
+        }
+
         public async Task<FeedbackPostDetailDto> MapPostToFeedbackPostDetail(Post post)
         {
             var userInfo = await _userInformationRepo.GetOne(post.UserId);
@@ -125,6 +143,17 @@ namespace Service.Services
                 .Map(post, _mapper);
             feedbackPostDetail.AnswerNumber = await _commentService.Count(c => c.PostId == post.Id);
             return feedbackPostDetail;
+        }
+
+        private async Task<IEnumerable<FeedbackPostDetailDto>> MapPostsToFeedbackPostsDetail(IEnumerable<Post> posts)
+        {
+            var feedbackPostsDetail = new List<FeedbackPostDetailDto>();
+            foreach (var post in posts)
+            {
+                feedbackPostsDetail.Add(await MapPostToFeedbackPostDetail(post));
+            }
+
+            return feedbackPostsDetail;
         }
 
         public async Task<QuestionPostDetailDto> GetQuestionPost(int id)
@@ -137,6 +166,26 @@ namespace Service.Services
         {
             var post = await _postRepo.GetOne(id);
             return await MapPostToFeedbackPostDetail(post);
+        }
+
+        public async Task<IEnumerable<FeedbackPostDetailDto>> SearchFeedbackPosts(string pattern)
+        {
+            if (pattern == null) return null;
+            var arrayPattern = pattern.Split(" ");
+            var posts = await _postRepo.GetManyByCondition(p => p.IsDeleted != true
+                                                                && (p.Type == PostType.SpokenFeedback ||
+                                                                    p.Type == PostType.WrittenFeedback)
+                                                                && arrayPattern.All(s => p.Title.CaseInsensitiveContains(s)), CommonConstant.SearchLimit);
+            return await MapPostsToFeedbackPostsDetail(posts);
+        }
+
+        public async Task<IEnumerable<QuestionPostDetailDto>> SearchQuestionPosts(string pattern)
+        {
+            var arrayPattern = pattern.Split(" ");
+            var posts = await _postRepo.GetManyByCondition(p => p.IsDeleted != true
+                                                                && (p.Type == PostType.Question)
+                                                                && arrayPattern.All(s => p.Title.CaseInsensitiveContains(s)), CommonConstant.SearchLimit);
+            return await MapPostsToQuestionPostsDetail(posts);
         }
 
         public async Task<Post> SwitchPostVote(int postId, string userId, PostReactionType type)

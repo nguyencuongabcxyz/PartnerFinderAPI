@@ -73,9 +73,11 @@ namespace Data.Repositories
             return await EntitiesSet.Where(condition).FirstOrDefaultAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> condition)
+        public virtual async Task<IEnumerable<T>> GetManyByCondition(Expression<Func<T, bool>> condition, int? limit = null)
         {
-            return await EntitiesSet.Where(condition).ToListAsync();
+            if (limit == null)
+                return await EntitiesSet.Where(condition).ToListAsync();
+            return await EntitiesSet.Where(condition).Take((int)limit).ToListAsync();
         }
         public void Remove(T entity)
         {
