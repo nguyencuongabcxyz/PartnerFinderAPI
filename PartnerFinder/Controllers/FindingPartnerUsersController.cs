@@ -27,5 +27,13 @@ namespace PartnerFinder.Controllers
 
             return Ok(new {partnerFinders = findingPartnerUsers, count});
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchPartnerFinders(string location)
+        {
+            var userId = GetUserId();
+            var partnerFinders = await _findingPartnerUserService.SearchByLocation(userId, location);
+            return Ok(partnerFinders);
+        }
     }
 }

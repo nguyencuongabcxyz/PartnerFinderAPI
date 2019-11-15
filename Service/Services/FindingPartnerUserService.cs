@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Models;
 using Data.Repositories;
+using Service.Constants;
 using Service.Extensions;
 using Service.Models;
 
@@ -14,6 +15,7 @@ namespace Service.Services
     public interface IFindingPartnerUserService
     {
         Task<IEnumerable<FindingPartnerUserDto>> GetForPagination(string userId, int index, int size = 6);
+        Task<IEnumerable<FindingPartnerUserDto>> SearchByLocation(string userId,string location);
         Task<int> Count(string userId);
     }
     public class FindingPartnerUserService : IFindingPartnerUserService
@@ -27,6 +29,21 @@ namespace Service.Services
             _userInformationRepo = userInformationRepo;
             _findingPartnerUserRepo = findingPartnerUserRepo;
             _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<FindingPartnerUserDto>> SearchByLocation(string userId, string location)
+        {
+            var matchedUsers = await _userInformationRepo.GetManyByCondition(u => u.UserId != userId 
+                                                                                  && u.Location != null 
+                                                                                  && u.Location.CaseInsensitiveContains(location),                                                                     CommonConstant.SearchLimit);
+            var finderPosts = new List<FindingPartnerUser>();
+            foreach (var user in matchedUsers)
+            {
+                var finderPost = await _findingPartnerUserRepo.GetOne(user.UserId);
+                finderPosts.Add(finderPost);
+            }
+
+            return await MapModelToDtoModel(finderPosts);
         }
 
         public async Task<int> Count(string userId)
