@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PartnerFinder.CustomFilters;
@@ -10,22 +11,24 @@ namespace PartnerFinder.Controllers
     [ApiController]
     [ServiceFilter(typeof(ObjectExistenceFilter))]
     [Authorize]
-    public class FindingPartnerUsersController : CommonBaseController
+    public class PartnerFindersController : CommonBaseController
     {
         private readonly IFindingPartnerUserService _findingPartnerUserService;
-        public FindingPartnerUsersController(IFindingPartnerUserService findingPartnerUserService)
+        private readonly IUserInformationService _userInformationService;
+        public PartnerFindersController(IFindingPartnerUserService findingPartnerUserService, IUserInformationService userInformationService)
         {
             _findingPartnerUserService = findingPartnerUserService;
+            _userInformationService = userInformationService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetForPagination(int index, int size)
+        public async Task<IActionResult> GetForPagination(string location,UserLevel level, int index, int size)
         {
             var userId = GetUserId();
-            var count = await _findingPartnerUserService.Count(userId);
-            var findingPartnerUsers = await _findingPartnerUserService.GetForPagination(userId, index, size);
+            var count = await _userInformationService.CountPartnerFinders(userId, location, level);
+            var partnerFinders = await _userInformationService.GetPartnerFinders(userId, location, level, index, size);
 
-            return Ok(new {partnerFinders = findingPartnerUsers, count});
+            return Ok(new {partnerFinders, count});
         }
 
         [HttpGet("search")]

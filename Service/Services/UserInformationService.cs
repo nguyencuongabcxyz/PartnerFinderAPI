@@ -21,7 +21,8 @@ namespace Service.Services
         Task<UserInfoDto> GetOne(string id);
         Task<UserInfoDto> Update(string id, UserInfoDto userInfoDto);
         Task<UserInfoDto> UpdateMediaProfile(string id, MediaProfileDto mediaProfile);
-        Task<PartnerFinderDto> GetPartnerFinders(string userId, int index, int size);
+        Task<IEnumerable<PartnerFinderDto>> GetPartnerFinders(string userId, string location, UserLevel level, int index, int size);
+        Task<int> CountPartnerFinders(string userId, string location, UserLevel level);
     }
     public class UserInformationService : IUserInformationService
     {
@@ -110,12 +111,63 @@ namespace Service.Services
                     typeof(UserInformation).GetProperty(prop.Name)?.SetValue(userInfoModel, mediaPropValue);
                 }
             }
+
             return _mapper.Map<UserInfoDto>(userInfoModel);
         }
 
-        public Task<PartnerFinderDto> GetPartnerFinders(string userId, string location, int level, int index, int size)
+        private IEnumerable<PartnerFinderDto> MapUserInfosToPartnerFinders(IEnumerable<UserInformation> users)
         {
-            
+            return users.Select(user => _mapper.Map<PartnerFinderDto>(user)).ToList();
+        }
+
+
+
+        public async Task<IEnumerable<PartnerFinderDto>> GetPartnerFinders(string userId, string location, UserLevel level, int index, int size)
+        {
+            Expression<Func<UserInformation, bool>> condition;
+            if (location == null && level == UserLevel.Undefined)
+            {
+                condition = u => u.UserId != userId;
+            }else if (location == null && level != UserLevel.Undefined)
+            {
+                condition = u => u.UserId != userId && u.Level == level;
+            }else if (location != null && level == UserLevel.Undefined)
+            {
+                condition = u => u.UserId != userId && u.Location == location;
+            }
+            else
+            {
+                condition = u => u.UserId != userId && u.Location == location && u.Level == level;
+            }
+            var users = await _userInformationRepo.OrderAndGetRange(index,
+                size,
+                OrderType.OrderByDescending,
+                u => u.UpdatedDate,
+                condition);
+            return MapUserInfosToPartnerFinders(users);
+        }
+
+        public async Task<int> CountPartnerFinders(string userId, string location, UserLevel level)
+        {
+            Expression<Func<UserInformation, bool>> condition;
+            if (location == null && level == UserLevel.Undefined)
+            {
+                condition = u => u.UserId != userId;
+            }
+            else if (location == null && level != UserLevel.Undefined)
+            {
+                condition = u => u.UserId != userId && u.Level == level;
+            }
+            else if (location != null && level == UserLevel.Undefined)
+            {
+                condition = u => u.UserId != userId && u.Location == location;
+            }
+            else
+            {
+                condition = u => u.UserId != userId && u.Location == location && u.Level == level;
+            }
+
+            return await _userInformationRepo.Count(condition);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Service.Models
         public string UserId { get; set; }
         public string Avatar { get; set; }
         public string Name { get; set; }
+        public int? Age { get; set; }
         public string Location { get; set; }
         public UserLevel? Level { get; set; }
         public string Introduction { get; set; }

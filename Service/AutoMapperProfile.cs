@@ -47,6 +47,8 @@ namespace Service
 
             CreateMap<Post, FeedbackPostDetailDto>();
             CreateMap<UserInformation, FeedbackPostDetailDto>();
+
+            CreateMap<UserInformation, PartnerFinderDto>();
         }
     }
 }
