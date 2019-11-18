@@ -21,6 +21,7 @@ namespace Service.Services
         Task<UserInfoDto> GetOne(string id);
         Task<UserInfoDto> Update(string id, UserInfoDto userInfoDto);
         Task<UserInfoDto> UpdateMediaProfile(string id, MediaProfileDto mediaProfile);
+        Task<PartnerFinderDto> GetPartnerFinders(string userId, int index, int size);
     }
     public class UserInformationService : IUserInformationService
     {
@@ -110,6 +111,11 @@ namespace Service.Services
                 }
             }
             return _mapper.Map<UserInfoDto>(userInfoModel);
+        }
+
+        public Task<PartnerFinderDto> GetPartnerFinders(string userId, string location, int level, int index, int size)
+        {
+            
         }
     }
 }
