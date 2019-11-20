@@ -49,6 +49,14 @@ namespace Service
             CreateMap<UserInformation, FeedbackPostDetailDto>();
 
             CreateMap<UserInformation, PartnerFinderDto>();
+
+            CreateMap<ReqPartnerRequestDto, PartnerRequest>();
+
+            CreateMap<UserInformation, ResPartnerRequestDto>()
+                .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.SenderAvatar, opt => opt.MapFrom(src => src.Avatar))
+                .ForMember(dest => dest.SenderName, opt => opt.MapFrom(src => src.Name));
+            CreateMap<PartnerRequest, ResPartnerRequestDto>();
         }
     }
 }

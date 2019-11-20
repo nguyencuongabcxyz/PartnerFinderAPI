@@ -18,7 +18,7 @@ namespace Data.Models
         public ICollection<PostReaction> PostReactions { get; set; }
         public ICollection<CommentReaction> CommentReactions { get; set; }
 
-        //RequestPartner relationship
+        //PartnerRequest relationship
         [InverseProperty("Sender")]
         public ICollection<PartnerRequest> SentPartnerRequests { get; set; }
         [InverseProperty("Receiver")]
