@@ -8,8 +8,9 @@ namespace Service.Models
 {
     public class ReqPartnerRequestDto
     {
-        public string Content { get; set; }
         [Required]
+        [MaxLength(500)]
+        public string Content { get; set; }
         public string SenderId { get; set; }
         [Required]
         public string ReceiverId { get; set; }
