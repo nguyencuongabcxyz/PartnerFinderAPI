@@ -27,11 +27,18 @@ namespace Service.Services
     public class UserInformationService : IUserInformationService
     {
         private readonly IUserInformationRepository _userInformationRepo;
+        private readonly IPartnerRequestRepository _partnerRequestRepo;
+        private readonly IPartnershipRepository _partnershipRepo;
         private readonly IMapper _mapper;
 
-        public UserInformationService(IUserInformationRepository userInformationRepo, IMapper mapper)
+        public UserInformationService(IUserInformationRepository userInformationRepo, 
+            IMapper mapper, 
+            IPartnerRequestRepository partnerRequestRepo, 
+            IPartnershipRepository partnershipRepo)
         {
             _userInformationRepo = userInformationRepo;
+            _partnerRequestRepo = partnerRequestRepo;
+            _partnershipRepo = partnershipRepo;
             _mapper = mapper;
         }
 
@@ -115,9 +122,28 @@ namespace Service.Services
             return _mapper.Map<UserInfoDto>(userInfoModel);
         }
 
-        private IEnumerable<PartnerFinderDto> MapUserInfosToPartnerFinders(IEnumerable<UserInformation> users)
+        private async Task<IEnumerable<PartnerFinderDto>> MapUserInfosToPartnerFinders(IEnumerable<UserInformation> users, string userId)
         {
-            return users.Select(user => _mapper.Map<PartnerFinderDto>(user)).ToList();
+            var partnerFinders = new List<PartnerFinderDto>();
+            foreach(var user in users)
+            {
+                var isPendingRequest = await _partnerRequestRepo.CheckExistence(p => p.SenderId == userId && p.ReceiverId == user.UserId);
+                var isInPartnership = await _partnershipRepo.CheckExistence(p => p.OwnerId == userId && p.PartnerId == user.UserId);
+                var partnerFinder = _mapper.Map<PartnerFinderDto>(user);
+                if(!isPendingRequest && !isInPartnership)
+                {
+                    partnerFinder.Status = PartnerFinderStatus.NotInPartnership;
+                }else if(isPendingRequest)
+                {
+                    partnerFinder.Status = PartnerFinderStatus.PendingRequest;
+                }
+                else
+                {
+                    partnerFinder.Status = PartnerFinderStatus.InPartnership;
+                }
+                partnerFinders.Add(partnerFinder);
+            }
+            return partnerFinders;
         }
 
 
@@ -144,7 +170,7 @@ namespace Service.Services
                 OrderType.OrderByDescending,
                 u => u.UpdatedDate,
                 condition);
-            return MapUserInfosToPartnerFinders(users);
+            return await MapUserInfosToPartnerFinders(users, userId);
         }
 
         public async Task<int> CountPartnerFinders(string userId, string location, UserLevel level)

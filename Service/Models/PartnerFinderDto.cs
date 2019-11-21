@@ -15,5 +15,14 @@ namespace Service.Models
         public UserLevel? Level { get; set; }
         public string Introduction { get; set; }
         public DateTime UpdatedDate { get; set; }
+        public int MyProperty { get; set; }
+        public PartnerFinderStatus Status { get; set; }
+    }
+
+    public enum PartnerFinderStatus
+    {
+        NotInPartnership,
+        PendingRequest,
+        InPartnership,
     }
 }

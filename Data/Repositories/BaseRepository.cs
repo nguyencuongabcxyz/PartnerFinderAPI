@@ -96,6 +96,12 @@ namespace Data.Repositories
             }
             return await EntitiesSet.Where(condition).CountAsync();
         }
+
+        public async Task<bool> CheckExistence(Expression<Func<T, bool>> condition)
+        {
+            var instanceObject = await GetOneByCondition(condition);
+            return instanceObject != null;
+        }
     }
 
     public enum OrderType

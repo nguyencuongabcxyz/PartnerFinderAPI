@@ -7,6 +7,7 @@ using AutoMapper;
 using Data.Models;
 using Service.Models;
 using Service.Extensions;
+using System.Linq.Expressions;
 
 namespace Service.Services
 {
@@ -14,6 +15,7 @@ namespace Service.Services
     {
         Task AddOne(ReqPartnerRequestDto partnerRequestDto);
         Task<IEnumerable<ResPartnerRequestDto>> GetAll(string userId, int index, int size);
+        Task<int> Count(string userId);
     }
     public class PartnerRequestService : IPartnerRequestService
     {
@@ -55,6 +57,11 @@ namespace Service.Services
                                                                       p => p.CreatedDate,
                                                                       p => p.IsDeleted != true && p.ReceiverId == userId);
             return await MapModelsToResPartnerRequests(partnerRequests);
+        }
+
+        public async Task<int> Count(string userId)
+        {
+            return await _partnerRequestRepo.Count(p => p.IsDeleted != true && p.ReceiverId == userId);
         }
     }
 }
