@@ -14,6 +14,7 @@ namespace Service.Services
     public interface IPartnerRequestService
     {
         Task AddOne(ReqPartnerRequestDto partnerRequestDto);
+        Task RemoveOne(int id);
         Task<IEnumerable<ResPartnerRequestDto>> GetAll(string userId, int index, int size);
         Task<int> Count(string userId);
     }
@@ -62,6 +63,12 @@ namespace Service.Services
         public async Task<int> Count(string userId)
         {
             return await _partnerRequestRepo.Count(p => p.IsDeleted != true && p.ReceiverId == userId);
+        }
+
+        public async Task RemoveOne(int id)
+        {
+            var partnerRequest = await _partnerRequestRepo.GetOne(id);
+            _partnerRequestRepo.Remove(partnerRequest);
         }
     }
 }

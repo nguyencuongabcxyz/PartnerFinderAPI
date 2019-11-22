@@ -29,7 +29,7 @@ namespace PartnerFinder.Controllers
             reqPartnerRequest.SenderId = userId;
             await _partnerRequestService.AddOne(reqPartnerRequest);
             await _unitOfWork.Commit();
-            return Ok();
+            return Ok(new { result = true });
         }
 
         [HttpGet]
@@ -39,6 +39,14 @@ namespace PartnerFinder.Controllers
             var partnerRequests = await _partnerRequestService.GetAll(userId, index, size);
             var count = await _partnerRequestService.Count(userId);
             return Ok(new { partnerRequests, count });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveOne(int id)
+        {
+            await _partnerRequestService.RemoveOne(id);
+            await _unitOfWork.Commit();
+            return Ok(new { result = true });
         }
     }
 }
