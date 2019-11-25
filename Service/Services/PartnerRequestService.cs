@@ -15,6 +15,7 @@ namespace Service.Services
     {
         Task AddOne(ReqPartnerRequestDto partnerRequestDto);
         Task RemoveOne(int id);
+        Task AcceptOne(int id);
         Task<IEnumerable<ResPartnerRequestDto>> GetAll(string userId, int index, int size);
         Task<int> Count(string userId);
     }
@@ -69,6 +70,17 @@ namespace Service.Services
         {
             var partnerRequest = await _partnerRequestRepo.GetOne(id);
             _partnerRequestRepo.Remove(partnerRequest);
+        }
+
+        public async Task AcceptOne(int id)
+        {
+            var requestFromRequestingUser = await _partnerRequestRepo.GetOne(id);
+            var requestFromSenderUser = await _partnerRequestRepo.GetOneByCondition(p =>
+            p.SenderId == requestFromRequestingUser.ReceiverId
+            && p.ReceiverId == requestFromRequestingUser.SenderId);
+            _partnerRequestRepo.Remove(requestFromRequestingUser);
+            if(requestFromSenderUser != null)
+            _partnerRequestRepo.Remove(requestFromSenderUser);
         }
     }
 }

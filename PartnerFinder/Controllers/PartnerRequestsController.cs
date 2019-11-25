@@ -48,5 +48,14 @@ namespace PartnerFinder.Controllers
             await _unitOfWork.Commit();
             return Ok(new { result = true });
         }
+
+        [HttpDelete("{id}/accept")]
+        public async Task<IActionResult> AcceptOne(int id)
+        {
+            await _partnerRequestService.AcceptOne(id);
+            await _unitOfWork.Commit();
+            return Ok(new { result = true });
+        }
+
     }
 }
