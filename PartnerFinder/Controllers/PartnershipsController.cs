@@ -25,9 +25,16 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> AddPartnership(string partnerId)
         {
             var userId = GetUserId();
-            await _partnershipService.AddOne(userId, partnerId);
-            await _unitOfWork.Commit();
-            return Ok(new { result = true });
+            var partnership = await _partnershipService.AddOne(userId, partnerId);
+            return Ok(partnership);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPartners()
+        {
+            var userId = GetUserId();
+            var partnerships = await _partnershipService.GetAll(userId);
+            return Ok(partnerships);
         }
     }
 }

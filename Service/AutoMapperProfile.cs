@@ -57,6 +57,9 @@ namespace Service
                 .ForMember(dest => dest.SenderAvatar, opt => opt.MapFrom(src => src.Avatar))
                 .ForMember(dest => dest.SenderName, opt => opt.MapFrom(src => src.Name));
             CreateMap<PartnerRequest, ResPartnerRequestDto>();
+
+            CreateMap<UserInformation, PartnershipDto>();
+            CreateMap<Partnership, PartnershipDto>();
         }
     }
 }
