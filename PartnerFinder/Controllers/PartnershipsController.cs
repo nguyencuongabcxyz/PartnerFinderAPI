@@ -36,5 +36,14 @@ namespace PartnerFinder.Controllers
             var partnerships = await _partnershipService.GetAll(userId);
             return Ok(partnerships);
         }
+
+        [HttpDelete("{partnerId}")]
+        public async Task<IActionResult> RemovePartnership(string partnerId)
+        {
+            var userId = GetUserId();            
+            var partnership = await _partnershipService.RemoveOne(userId, partnerId);
+            await _unitOfWork.Commit();
+            return Ok(partnership);
+        }
     }
 }

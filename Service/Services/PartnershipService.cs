@@ -12,6 +12,7 @@ namespace Service.Services
     public interface IPartnershipService
     {
         Task<PartnershipDto> AddOne(string userId, string partnerId);
+        Task<PartnershipDto> RemoveOne(string userId, string partnerId);
         Task<IEnumerable<PartnershipDto>> GetAll(string userId);
     }
     public class PartnershipService : IPartnershipService
@@ -70,6 +71,15 @@ namespace Service.Services
         {
             var partnerships = await _partnershipRepo.GetManyByCondition(p => p.OwnerId == userId);
             return await MapPartnershipsToPartnershipDtos(partnerships);
+        }
+
+        public async Task<PartnershipDto> RemoveOne(string userId, string partnerId)
+        {
+            var partnershipFromUser = await _partnershipRepo.GetOneByCondition(p => p.OwnerId == userId && p.PartnerId == partnerId);
+            var partnershipFromPartner = await _partnershipRepo.GetOneByCondition(p => p.OwnerId == partnerId && p.PartnerId == userId);
+            _partnershipRepo.Remove(partnershipFromUser);
+            _partnershipRepo.Remove(partnershipFromPartner);
+            return await MapPartnershipToPartnershipDto(partnershipFromUser);
         }
     }
 }
