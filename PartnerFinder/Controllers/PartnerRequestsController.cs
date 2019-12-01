@@ -41,6 +41,14 @@ namespace PartnerFinder.Controllers
             return Ok(new { partnerRequests, count });
         }
 
+        [HttpGet("count")]
+        public async Task<IActionResult> Count()
+        {
+            var userId = GetUserId();
+            var count = await _partnerRequestService.Count(userId);
+            return Ok(count);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveOne(int id)
         {
