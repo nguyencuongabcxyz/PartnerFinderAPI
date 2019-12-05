@@ -17,13 +17,15 @@ namespace PartnerFinder.Controllers
     {
         private readonly IPostService _postService;
         private readonly ICommentService _commentService;
+        private readonly INotificationService _notificationService;
         private readonly IUnitOfWork _unitOfWork;
 
         public PostsController(IPostService postService, IUnitOfWork unitOfWork, 
-            ICommentService commentService)
+            ICommentService commentService, INotificationService notificationService)
         {
             _postService = postService;
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
             _commentService = commentService;
         }
 
@@ -90,6 +92,7 @@ namespace PartnerFinder.Controllers
         {
             var userId = GetUserId();
             var post = await _postService.SwitchPostVote(id, userId, PostReactionType.UpVote);
+            await _notificationService.CreatePostLikeNoti(post.UserId, userId, id);
             await _unitOfWork.Commit();
             var questionPostDetail = await _postService.MapPostToQuestionPostDetail(post);
             return Ok(questionPostDetail);
@@ -100,6 +103,7 @@ namespace PartnerFinder.Controllers
         {
             var userId = GetUserId();
             var post = await _postService.SwitchPostVote(id, userId, PostReactionType.UpVote);
+            await _notificationService.CreatePostLikeNoti(post.UserId, userId, id);
             await _unitOfWork.Commit();
             var feedbackPostDetail = await _postService.MapPostToFeedbackPostDetail(post);
             return Ok(feedbackPostDetail);

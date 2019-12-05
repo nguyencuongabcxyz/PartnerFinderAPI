@@ -13,6 +13,7 @@ namespace Service.Services
 {
     public interface ICommentService
     {
+        Task<Comment> GetOne(int id);
         Task<IEnumerable<ResponseCommentDto>> GetPostComments(int postId, string currentUserId);
         Task<Comment> AddOne(RequestCommentDto requestComment);
         Task<int> Count(Expression<Func<Comment, bool>> condition);
@@ -104,6 +105,11 @@ namespace Service.Services
             }
 
             return responseComments;
+        }
+
+        public async Task<Comment> GetOne(int id)
+        {
+            return await _commentRepo.GetOne(id);
         }
     }
 }

@@ -60,6 +60,12 @@ namespace Service
 
             CreateMap<UserInformation, PartnershipDto>();
             CreateMap<Partnership, PartnershipDto>();
+
+            CreateMap<UserInformation, NotificationDto>()
+                .ForMember(dest => dest.CreatorId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.CreatorAvatar, opt => opt.MapFrom(src => src.Avatar))
+                .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Name));
+            CreateMap<Notification, NotificationDto>();
         }
     }
 }

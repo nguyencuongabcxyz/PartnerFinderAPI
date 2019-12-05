@@ -33,10 +33,10 @@ namespace PartnerFinder.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPartnerRequests(int index, int size)
+        public async Task<IActionResult> GetAllPartnerRequests()
         {
             var userId = GetUserId();
-            var partnerRequests = await _partnerRequestService.GetAll(userId, index, size);
+            var partnerRequests = await _partnerRequestService.GetAll(userId);
             var count = await _partnerRequestService.Count(userId);
             return Ok(new { partnerRequests, count });
         }

@@ -15,6 +15,7 @@ namespace Service.Services
 {
     public interface IPostService
     {
+        Task<Post> GetOne(int id);
         Task<IEnumerable<DashboardPostDto>> GetQuestionPostsForDashboard(int index, int size = 8);
         Task<IEnumerable<DashboardPostDto>> GetFeedbackPostsForDashboard(int index, int size = 8);
         Task<int> CountQuestionPosts();
@@ -201,6 +202,11 @@ namespace Service.Services
         {
             var reactionCount = await _postReactionService.Count(r => r.UserId == userId && r.PostId == postId);
             return reactionCount > 0;
+        }
+
+        public async Task<Post> GetOne(int id)
+        {
+            return await _postRepo.GetOne(id);
         }
     }
 }

@@ -17,11 +17,15 @@ namespace PartnerFinder.Controllers
     public class CommentsController : CommonBaseController
     {
         private readonly ICommentService _commentService;
+        private readonly INotificationService _notificationService;
+        private readonly IPostService _postService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CommentsController(ICommentService commentService, IUnitOfWork unitOfWork)
+        public CommentsController(ICommentService commentService, IUnitOfWork unitOfWork, INotificationService notificationService, IPostService postService)
         {
             _commentService = commentService;
+            _notificationService = notificationService;
+            _postService = postService;
             _unitOfWork = unitOfWork;
         }
 
@@ -30,7 +34,17 @@ namespace PartnerFinder.Controllers
         {
             var userId = GetUserId();
             requestComment.UserId = userId;
+            var post = await _postService.GetOne((int)requestComment.PostId);
             var comment = await _commentService.AddOne(requestComment);
+            if (requestComment.ParentId != null)
+            {
+                var parentComment = await _commentService.GetOne((int)requestComment.ParentId);
+                await _notificationService.CreateOne(parentComment.UserId, userId, (int)requestComment.PostId, NotificationType.CommentReply);
+            }
+            else
+            {
+                await _notificationService.CreateOne(post.UserId, userId, (int)requestComment.PostId, NotificationType.PostComment);
+            }
             await _unitOfWork.Commit();
             var responseComment = await _commentService.MapModelToResponseComment(comment, userId);
             return Ok(responseComment);

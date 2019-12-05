@@ -11,7 +11,7 @@ namespace Data.Models
         [Required]
         public DateTime CreatedDate { get; set; }
         [Required]
-        public int Type { get; set; }
+        public NotificationType Type { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsViewed { get; set; }
         public int? PostId { get; set; }
@@ -22,6 +22,13 @@ namespace Data.Models
         [Required]
         public string CreatorId { get; set; }
         public ApplicationUser Creator { get; set; }
+    }
 
+    public enum NotificationType
+    {
+        PostComment,
+        CommentReply,
+        PostLike,
+        CommentLike,
     }
 }

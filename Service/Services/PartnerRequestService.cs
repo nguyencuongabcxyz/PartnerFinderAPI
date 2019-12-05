@@ -8,6 +8,7 @@ using Data.Models;
 using Service.Models;
 using Service.Extensions;
 using System.Linq.Expressions;
+using System.Linq;
 
 namespace Service.Services
 {
@@ -16,7 +17,7 @@ namespace Service.Services
         Task AddOne(ReqPartnerRequestDto partnerRequestDto);
         Task RemoveOne(int id);
         Task AcceptOne(int id);
-        Task<IEnumerable<ResPartnerRequestDto>> GetAll(string userId, int index, int size);
+        Task<IEnumerable<ResPartnerRequestDto>> GetAll(string userId);
         Task<int> Count(string userId);
     }
     public class PartnerRequestService : IPartnerRequestService
@@ -52,13 +53,11 @@ namespace Service.Services
             return resPartnerRequests;
         }
 
-        public async Task<IEnumerable<ResPartnerRequestDto>> GetAll(string userId, int index, int size)
+        public async Task<IEnumerable<ResPartnerRequestDto>> GetAll(string userId)
         {
-            var partnerRequests = await _partnerRequestRepo.OrderAndGetRange(index, size,
-                                                                      OrderType.OrderByDescending,
-                                                                      p => p.CreatedDate,
-                                                                      p => p.IsDeleted != true && p.ReceiverId == userId);
-            return await MapModelsToResPartnerRequests(partnerRequests);
+            var partnerRequests = await _partnerRequestRepo.GetManyByCondition(p => p.IsDeleted != true && p.ReceiverId == userId);
+            var partnerRequestList = partnerRequests.ToList().OrderByDescending(p => p.CreatedDate);
+            return await MapModelsToResPartnerRequests(partnerRequestList);
         }
 
         public async Task<int> Count(string userId)
