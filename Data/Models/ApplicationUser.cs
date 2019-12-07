@@ -17,6 +17,7 @@ namespace Data.Models
         public ICollection<Comment> Comments { get; set; }
         public ICollection<PostReaction> PostReactions { get; set; }
         public ICollection<CommentReaction> CommentReactions { get; set; }
+        public ICollection<Message> Messages { get; set; }
 
         //PartnerRequest relationship
         [InverseProperty("Sender")]
@@ -30,11 +31,11 @@ namespace Data.Models
         [InverseProperty("Partner")]                                            //this is for creating relation in DB not necessary for query
         public ICollection<Partnership> PartnershipsAsPartner{ get; set; }
 
-        //Message relationship
-        [InverseProperty("Sender")]
-        public ICollection<Message> SentMessages { get; set; }
-        [InverseProperty("Receiver")]
-        public ICollection<Message> ReceivedMessages{ get; set; }
+        //Conversation relationship
+        [InverseProperty("Owner")]
+        public ICollection<Conversation> Conversations { get; set; }
+        [InverseProperty("Creator")]
+        public ICollection<Conversation> ConversationsAsCreator { get; set; }
 
         //BlockedRelation relationship
         [InverseProperty("Owner")]

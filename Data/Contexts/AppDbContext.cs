@@ -21,9 +21,9 @@ namespace Data.Contexts
                 .HasOne(o => o.Owner)
                 .WithMany(b => b.BlockedRelations)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<Message>()
-                .HasOne(s => s.Sender)
-                .WithMany(s => s.SentMessages)
+            builder.Entity<Conversation>()
+                .HasOne(s => s.Owner)
+                .WithMany(s => s.Conversations)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Notification>()
                 .HasOne(o => o.Owner)
@@ -54,5 +54,6 @@ namespace Data.Contexts
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<PostReaction> PostReactions { get; set; }
         public DbSet<CommentReaction> CommentReactions { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
     }
 }

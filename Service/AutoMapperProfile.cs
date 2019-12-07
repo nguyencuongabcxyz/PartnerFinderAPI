@@ -66,6 +66,19 @@ namespace Service
                 .ForMember(dest => dest.CreatorAvatar, opt => opt.MapFrom(src => src.Avatar))
                 .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Name));
             CreateMap<Notification, NotificationDto>();
+
+            CreateMap<ReqMessageDto, Message>();
+            CreateMap<Message, ResMessageDto>();
+            CreateMap<UserInformation, ResMessageDto>()
+                .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.SenderAvatar, opt => opt.MapFrom(src => src.Avatar))
+                .ForMember(dest => dest.SenderName, opt => opt.MapFrom(src => src.Name));
+
+            CreateMap<UserInformation, ConversationDto>()
+                .ForMember(dest => dest.CreatorId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.CreatorAvatar, opt => opt.MapFrom(src => src.Avatar))
+                .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Name));
+            CreateMap<Conversation, ConversationDto>();
         }
     }
 }

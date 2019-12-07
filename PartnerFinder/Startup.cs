@@ -42,6 +42,8 @@ namespace PartnerFinder
 
             services.AddCors();
 
+            services.AddSignalR();
+
             services.AddScoped<ObjectExistenceFilter>();
 
             services.AddHttpContextAccessor();
@@ -82,7 +84,10 @@ namespace PartnerFinder
                     .AllowAnyMethod()
                     .AllowCredentials()
             );
-
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chat");
+            });
             app.UseAuthentication();
             app.UseMvc();
         }

@@ -12,12 +12,9 @@ namespace Data.Models
         public bool IsDeleted { get; set; }
         public bool IsViewed { get; set; }
         public bool IsSent { get; set; }
-        [Required]
+        public int ConversationId { get; set; }
+        public Conversation Conversation { get; set; }
         public string SenderId { get; set; }
         public ApplicationUser Sender { get; set; }
-        [Required]
-        public string ReceiverId { get; set; }
-        public ApplicationUser Receiver { get; set; }
-
     }
 }
