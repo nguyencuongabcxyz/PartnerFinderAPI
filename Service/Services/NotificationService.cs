@@ -25,11 +25,13 @@ namespace Service.Services
     {
         private readonly INotificationRepository _notificationRepo;
         private readonly IUserInformationRepository _userInformationRepo;
+        private readonly IPostRepository _postRepo;
         private readonly IMapper _mapper;
-        public NotificationService(INotificationRepository notificationRepo, IUserInformationRepository userInformationRepo, IMapper mapper)
+        public NotificationService(INotificationRepository notificationRepo, IUserInformationRepository userInformationRepo, IMapper mapper, IPostRepository postRepo)
         {
             _notificationRepo = notificationRepo;
             _userInformationRepo = userInformationRepo;
+            _postRepo = postRepo;
             _mapper = mapper;
         }
 
@@ -50,8 +52,10 @@ namespace Service.Services
         public async Task<NotificationDto> MapNotificationToNotificationDto(Notification notification)
         {
             var user = await _userInformationRepo.GetOne(notification.CreatorId);
+            var post = await _postRepo.GetOne(notification.PostId);
             var notificationDto = _mapper.Map<NotificationDto>(user)
                                         .Map(notification, _mapper);
+            notificationDto.PostType = post.Type;
             return notificationDto;
         }
 

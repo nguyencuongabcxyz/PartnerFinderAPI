@@ -79,6 +79,12 @@ namespace Service
                 .ForMember(dest => dest.CreatorAvatar, opt => opt.MapFrom(src => src.Avatar))
                 .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Name));
             CreateMap<Conversation, ConversationDto>();
+
+            CreateMap<UserInformation, ConversationItemDto>()
+                .ForMember(dest => dest.CreatorId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.CreatorAvatar, opt => opt.MapFrom(src => src.Avatar))
+                .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Name));
+            CreateMap<Conversation, ConversationItemDto>();
         }
     }
 }

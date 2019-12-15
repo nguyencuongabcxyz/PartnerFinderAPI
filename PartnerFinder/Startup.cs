@@ -24,7 +24,7 @@ namespace PartnerFinder
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("CompanyComputer");
+            var connectionString = Configuration.GetConnectionString("HomeComputer");
 
             services.ConfigureMvc();
 
@@ -43,6 +43,7 @@ namespace PartnerFinder
             services.AddCors();
 
             services.AddSignalR();
+            services.AddHttpContextAccessor();
 
             services.AddScoped<ObjectExistenceFilter>();
 
@@ -84,11 +85,11 @@ namespace PartnerFinder
                     .AllowAnyMethod()
                     .AllowCredentials()
             );
+            app.UseAuthentication();
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
             });
-            app.UseAuthentication();
             app.UseMvc();
         }
     }

@@ -14,8 +14,11 @@ namespace Service.Services
     public interface IConversationService
     {
         Task<IEnumerable<ConversationDto>> GetAllWithLastedMessage(string ownerId);
-        Task<Conversation> GetOneWithAllMessage(int id);
+        Task<ConversationItemDto> GetOneWithAllMessage(int id);
+        Task<bool> CheckExistence(string senderId, string receiverId);
+        Task<List<int>> GetListIdConversation(string senderId, string receiverId);
         Task CreateOne(string ownerId, string creatorId);
+        Task<int> Count(string userId);
     }
     public class ConversationService : IConversationService
     {
@@ -76,13 +79,37 @@ namespace Service.Services
             return await MapConversationsToConversationDtos(conversations);
         }
 
-        public async Task<Conversation> GetOneWithAllMessage(int id)
+        public async Task<ConversationItemDto> GetOneWithAllMessage(int id)
         {
             var conversation = await _conversationRepo.GetOne(id);
             conversation.IsViewed = true;
             var messages = await _messageRepo.GetManyByCondition(m => m.ConversationId == conversation.Id);
             conversation.Messages = messages.OrderByDescending(m => m.CreatedDate).ToList();
-            return conversation;
+            var user = await _userInformationRepo.GetOne(conversation.CreatorId);
+            var conversationDto = _mapper.Map<ConversationItemDto>(user)
+                                         .Map(conversation, _mapper);
+            return conversationDto;
+        }
+
+        public async Task<bool> CheckExistence(string senderId, string receiverId)
+        {
+            var conversation = await _conversationRepo.GetOneByCondition(c => c.OwnerId == senderId && c.CreatorId == receiverId);
+            return conversation != null;
+        }
+
+        public async Task<List<int>> GetListIdConversation(string senderId, string receiverId)
+        {
+            List<int> conversationIds = new List<int>();
+            var conversationForSender = await _conversationRepo.GetOneByCondition(c => c.OwnerId == senderId && c.CreatorId == receiverId);
+            var conversationForReceiver = await _conversationRepo.GetOneByCondition(c => c.OwnerId == receiverId && c.CreatorId == senderId);
+            conversationIds.Add(conversationForSender.Id);
+            conversationIds.Add(conversationForReceiver.Id);
+            return conversationIds;
+        }
+
+        public async Task<int> Count(string userId)
+        {
+            return await _conversationRepo.Count(c => c.OwnerId == userId && c.IsViewed == false);
         }
     }
 }

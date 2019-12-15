@@ -41,6 +41,14 @@ namespace PartnerFinder.Controllers
             return Ok(conversation);
         }
 
+        [HttpGet("count")]
+        public async Task<IActionResult> GetCount()
+        {
+            var userId = GetUserId();
+            var count = await _conversationService.Count(userId);
+            return Ok(count);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateOne(string creatorId)
         {
