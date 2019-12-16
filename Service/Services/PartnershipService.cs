@@ -19,12 +19,14 @@ namespace Service.Services
     {
         private readonly IPartnershipRepository _partnershipRepo;
         private readonly IUserInformationRepository _userInformationRepo;
+        private readonly IConversationRepository _conversationRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public PartnershipService(IPartnershipRepository partnershipRepo, IMapper mapper, IUserInformationRepository userInformationRepo, IUnitOfWork unitOfWork)
+        public PartnershipService(IPartnershipRepository partnershipRepo, IMapper mapper, IUserInformationRepository userInformationRepo, IUnitOfWork unitOfWork, IConversationRepository conversationRepo)
         {
             _partnershipRepo = partnershipRepo;
             _userInformationRepo = userInformationRepo;
+            _conversationRepo = conversationRepo;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
@@ -51,8 +53,13 @@ namespace Service.Services
         private async Task<PartnershipDto> MapPartnershipToPartnershipDto(Partnership partnership)
         {
             var user = await _userInformationRepo.GetOne(partnership.PartnerId);
+            var conversation = await _conversationRepo.GetOneByCondition(c => c.OwnerId == partnership.OwnerId && c.CreatorId == partnership.PartnerId);
             var partnershipDto = _mapper.Map<PartnershipDto>(partnership)
                                         .Map(user, _mapper);
+            if (conversation != null)
+            {
+                partnershipDto.ConversationId = conversation.Id;
+            }
             return partnershipDto;
         }
 

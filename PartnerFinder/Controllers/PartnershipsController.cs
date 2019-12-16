@@ -14,10 +14,12 @@ namespace PartnerFinder.Controllers
     public class PartnershipsController : CommonBaseController
     {
         private readonly IPartnershipService _partnershipService;
+        private readonly IConversationService _conversationService;
         private readonly IUnitOfWork _unitOfWork;
-        public PartnershipsController(IPartnershipService partnershipService, IUnitOfWork unitOfWork)
+        public PartnershipsController(IPartnershipService partnershipService, IUnitOfWork unitOfWork, IConversationService conversationService)
         {
             _partnershipService = partnershipService;
+            _conversationService = conversationService;
             _unitOfWork = unitOfWork;
         }
 
@@ -26,6 +28,10 @@ namespace PartnerFinder.Controllers
         {
             var userId = GetUserId();
             var partnership = await _partnershipService.AddOne(userId, partnerId);
+            await _conversationService.CreateOne(userId, partnerId);
+            await _unitOfWork.Commit();
+            var conversation = await _conversationService.GetOneByCondition(userId, partnerId);
+            partnership.ConversationId = conversation.Id;
             return Ok(partnership);
         }
 

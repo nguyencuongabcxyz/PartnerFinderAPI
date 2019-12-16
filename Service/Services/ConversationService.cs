@@ -17,6 +17,7 @@ namespace Service.Services
         Task<ConversationItemDto> GetOneWithAllMessage(int id);
         Task<bool> CheckExistence(string senderId, string receiverId);
         Task<List<int>> GetListIdConversation(string senderId, string receiverId);
+        Task<Conversation> GetOneByCondition(string senderId, string receiverId);
         Task CreateOne(string ownerId, string creatorId);
         Task<int> Count(string userId);
     }
@@ -36,6 +37,8 @@ namespace Service.Services
 
         public async Task CreateOne(string ownerId, string creatorId)
         {
+            var isExisted = await CheckExistence(ownerId, creatorId);
+            if (isExisted) return;
             var conversation = new Conversation()
             {
                 UpdatedDate = DateTime.UtcNow,
@@ -58,6 +61,7 @@ namespace Service.Services
             var lastedMessage = await _messageRepo.GetLastedMessage(conversation.Id);
             var conversationDto = _mapper.Map<ConversationDto>(user)
                                          .Map(conversation, _mapper);
+            if (lastedMessage == null) return null;
             conversationDto.LastedMessage = lastedMessage.Content;
             return conversationDto;
         }
@@ -68,7 +72,10 @@ namespace Service.Services
             foreach(var item in conversations)
             {
                 var conversationDto = await MapConversationToConversationDto(item);
-                conversationDtos.Add(conversationDto);
+                if (conversationDto != null)
+                {
+                    conversationDtos.Add(conversationDto);
+                }
             }
             return conversationDtos;
         }
@@ -76,7 +83,8 @@ namespace Service.Services
         public async Task<IEnumerable<ConversationDto>> GetAllWithLastedMessage(string ownerId)
         {
             var conversations = await _conversationRepo.GetManyByCondition(c => c.OwnerId == ownerId);
-            return await MapConversationsToConversationDtos(conversations);
+            var conversationList = conversations.ToList().OrderByDescending(c => c.UpdatedDate);
+            return await MapConversationsToConversationDtos(conversationList);
         }
 
         public async Task<ConversationItemDto> GetOneWithAllMessage(int id)
@@ -109,7 +117,21 @@ namespace Service.Services
 
         public async Task<int> Count(string userId)
         {
-            return await _conversationRepo.Count(c => c.OwnerId == userId && c.IsViewed == false);
+            var conversations = await GetAllWithLastedMessage(userId);
+            int count = 0;
+            foreach (var con in conversations)
+            {
+                if (!con.IsViewed)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public async Task<Conversation> GetOneByCondition(string senderId, string receiverId)
+        {
+            return await _conversationRepo.GetOneByCondition(c => c.OwnerId == senderId && c.CreatorId == receiverId);
         }
     }
 }

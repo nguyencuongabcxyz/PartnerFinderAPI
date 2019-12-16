@@ -120,6 +120,10 @@ namespace PartnerFinder.Controllers
         [HttpGet("feedback-post/search")]
         public async Task<IActionResult> SearchFeedbackPosts(string pattern)
         {
+            if (pattern == "" || pattern == null)
+            {
+                return Ok();
+            }
             var feedbackPosts = await _postService.SearchFeedbackPosts(pattern);
             return Ok(feedbackPosts);
         }
@@ -127,6 +131,10 @@ namespace PartnerFinder.Controllers
         [HttpGet("question-post/search")]
         public async Task<IActionResult> SearchQuestionPosts(string pattern)
         {
+            if (pattern == "" || pattern == null)
+            {
+                return Ok();
+            }
             var questionPosts = await _postService.SearchQuestionPosts(pattern);
             return Ok(questionPosts);
         }

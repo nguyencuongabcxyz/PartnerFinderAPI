@@ -26,6 +26,10 @@ namespace Service.Services
         public async Task AddOne(string senderId, string receiverId,string content)
         {
             var listIds = await _conversationService.GetListIdConversation(senderId, receiverId);
+            var conversation1 = await _conversationRepo.GetOne(listIds[0]);
+            var conversation2 = await _conversationRepo.GetOne(listIds[1]);
+            conversation1.UpdatedDate = DateTime.UtcNow;
+            conversation2.UpdatedDate = DateTime.UtcNow;
             var messageForSender = new Message()
             {
                 Content = content,
