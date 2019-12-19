@@ -72,14 +72,14 @@ namespace Service.Services
 
         public async Task<IEnumerable<NotificationDto>> GetAll(string userId)
         {
-            var notifications = await _notificationRepo.GetManyByCondition(p => p.IsDeleted != true && p.OwnerId == userId);
+            var notifications = await _notificationRepo.GetManyByCondition(p => p.IsDeleted != true && p.OwnerId == userId && p.CreatorId != userId);
             var notificationList = notifications.ToList().OrderByDescending(n => n.CreatedDate);
             return await MapNotificationsToNotificationDtos(notificationList);
         }
 
         public async Task<int> Count(string userId)
         {
-            return await _notificationRepo.Count(p => p.IsDeleted != true && p.OwnerId == userId);
+            return await _notificationRepo.Count(p => p.IsDeleted != true && p.OwnerId == userId && p.CreatorId != userId);
         }
 
         public async Task<bool> CheckExistenceOfPostLikeNoti(string ownerId, string creatorId, int postId)

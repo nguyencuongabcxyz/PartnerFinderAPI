@@ -31,6 +31,7 @@ namespace Data.Models
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Notification> Notifications { get; set; }
         public ICollection<PostReaction> PostReactions { get; set; }
+        public ICollection<Report> Reports { get; set; }
     }
 
     public enum PostType

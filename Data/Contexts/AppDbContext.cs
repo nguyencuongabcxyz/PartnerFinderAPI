@@ -33,6 +33,10 @@ namespace Data.Contexts
                 .HasOne(s => s.Sender)
                 .WithMany(s => s.SentPartnerRequests)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Report>()
+                .HasOne(s => s.Sender)
+                .WithMany(s => s.SentReports)
+                .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Partnership>()
                 .HasOne(o => o.Owner)
                 .WithMany(p => p.Partnerships)
@@ -55,5 +59,6 @@ namespace Data.Contexts
         public DbSet<PostReaction> PostReactions { get; set; }
         public DbSet<CommentReaction> CommentReactions { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<Report> Reports { get; set; }
     }
 }

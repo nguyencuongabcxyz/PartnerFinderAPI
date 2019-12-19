@@ -44,7 +44,7 @@ namespace Service.Services
 
         public async Task<IEnumerable<ResponseCommentDto>> GetPostComments(int postId, string currentUserId)
         {
-            var comments = await _commentRepo.GetManyWithSubComment(c => c.IsDeleted != true && c.PostId == postId);
+            var comments = await _commentRepo.GetManyWithSubComment(c => c.IsDeleted != true && c.PostId == postId && c.ParentId == null);
             var commentList = comments.ToList();
             var responseComments = await MapModelCollectionToResponseCommentCollection(commentList, currentUserId);
             for (var i = 0; i < commentList.Count(); i++)

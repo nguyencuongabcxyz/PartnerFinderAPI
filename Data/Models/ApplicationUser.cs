@@ -25,6 +25,12 @@ namespace Data.Models
         [InverseProperty("Receiver")]
         public ICollection<PartnerRequest> ReceivedPartnerRequests { get; set; }
 
+        //Report relationship
+        [InverseProperty("Sender")]
+        public ICollection<Report> SentReports { get; set; }
+        [InverseProperty("Receiver")]
+        public ICollection<Report> ReceivedReports { get; set; }
+
         //Partnership relationship
         [InverseProperty("Owner")]
         public ICollection<Partnership> Partnerships { get; set; }
