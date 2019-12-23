@@ -78,7 +78,7 @@ namespace Service.Services
             if (retrievedUserInfo == null) return 0;
             var properties = typeof(UserInformation).GetProperties();
             //Subtract 1 for ApplicationUser property using for mapping model to DB layer
-            var totalProps = properties.Length - 1;
+            var totalProps = properties.Length - 2;
             var setValueProps = properties.Select(p => typeof(UserInformation).GetProperty(p.Name)?.GetValue(retrievedUserInfo))
                                           .Count(propValue => propValue != null && propValue != "");
 
@@ -165,12 +165,19 @@ namespace Service.Services
             {
                 condition = u => u.UserId != userId && u.Location == location && u.Level == level;
             }
-            var users = await _userInformationRepo.OrderAndGetRange(index,
-                size,
-                OrderType.OrderByDescending,
-                u => u.UpdatedDate,
-                condition);
-            return await MapUserInfosToPartnerFinders(users, userId);
+            var users = await _userInformationRepo.GetManyByCondition(condition);
+            var userList = new List<UserInformation>();
+            foreach(var user in users)
+            {
+                var isPendingRequest = await _partnerRequestRepo.CheckExistence(p => p.SenderId == userId && p.ReceiverId == user.UserId);
+                var isInPartnership = await _partnershipRepo.CheckExistence(p => p.OwnerId == userId && p.PartnerId == user.UserId);
+                if(!isPendingRequest && !isInPartnership)
+                {
+                    userList.Add(user);
+                }
+            }
+            var returnUsers =  userList.OrderByDescending(u => u.UpdatedDate).Skip(index * size).Take(size);
+            return await MapUserInfosToPartnerFinders(returnUsers, userId);
         }
 
         public async Task<int> CountPartnerFinders(string userId, string location, UserLevel level)
@@ -192,8 +199,18 @@ namespace Service.Services
             {
                 condition = u => u.UserId != userId && u.Location == location && u.Level == level;
             }
-
-            return await _userInformationRepo.Count(condition);
+            var users = await _userInformationRepo.GetManyByCondition(condition);
+            var userList = new List<UserInformation>();
+            foreach (var user in users)
+            {
+                var isPendingRequest = await _partnerRequestRepo.CheckExistence(p => p.SenderId == userId && p.ReceiverId == user.UserId);
+                var isInPartnership = await _partnershipRepo.CheckExistence(p => p.OwnerId == userId && p.PartnerId == user.UserId);
+                if (!isPendingRequest && !isInPartnership)
+                {
+                    userList.Add(user);
+                }
+            }
+            return userList.Count;
         }
     }
 }

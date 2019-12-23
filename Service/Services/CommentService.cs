@@ -66,7 +66,8 @@ namespace Service.Services
 
         public async Task<int> Count(Expression<Func<Comment, bool>> condition)
         {
-            return await _commentRepo.Count(condition);
+            var comments = await _commentRepo.GetManyByCondition(condition);
+            return comments.Count();
         }
 
         public async Task<Comment> SwitchReaction(int id, string userId, CommentReactionType type)

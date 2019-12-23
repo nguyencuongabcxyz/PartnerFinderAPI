@@ -48,7 +48,7 @@ namespace Data.Repositories
             return await EntitiesSet.Where(condition).Skip(skipCount).Take(size).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> OrderAndGetRange<TU>(int index, int size, OrderType orderType, Expression<Func<T, TU>> orderedKey, Expression<Func<T, bool>> condition)
+        public virtual async Task<IEnumerable<T>> OrderAndGetRange<TU>(int index, int size, OrderType orderType, Expression<Func<T, TU>> orderedKey, Expression<Func<T, bool>> condition)
         {
             var skipCount = index * size;
             if (condition == null)
