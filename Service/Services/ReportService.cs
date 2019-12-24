@@ -1,5 +1,7 @@
-﻿using Data.Models;
+﻿using AutoMapper;
+using Data.Models;
 using Data.Repositories;
+using Service.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,14 +13,21 @@ namespace Service.Services
     {
         Task AddOne(Report report);
         Task DeleteOne(int id);
-        Task<IEnumerable<Report>> GetAll(int index, int size);
+        Task<int> Count();
+        Task<IEnumerable<ResReport>> GetAll(int index, int size);
     }
     public class ReportService : IReportService
     {
         public readonly IReportRepository _reportRepo;
-        public ReportService(IReportRepository reportRepo)
+        public readonly IUserInformationRepository _userInformationRepo;
+        public readonly IPostRepository _postRepo;
+        public readonly IMapper _mapper;
+        public ReportService(IReportRepository reportRepo, IUserInformationRepository userInformationRepo, IMapper mapper, IPostRepository postRepo)
         {
             _reportRepo = reportRepo;
+            _userInformationRepo = userInformationRepo;
+            _mapper = mapper;
+            _postRepo = postRepo;
         }
         public async Task AddOne(Report report)
         {
@@ -26,16 +35,38 @@ namespace Service.Services
             await _reportRepo.Add(report);
         }
 
-        public Task DeleteOne(int id)
+        public async Task<int> Count()
         {
-            throw new NotImplementedException();
+            return await _reportRepo.Count();
         }
 
-        public Task<IEnumerable<Report>> GetAll(int index, int size)
+        public async Task DeleteOne(int id)
         {
-            var reports = _reportRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, r => r.Content, null);
+            var report = await _reportRepo.GetOne(id);
+            _reportRepo.Remove(report);
+        }
 
-            return reports;
+        public async Task<IEnumerable<ResReport>> GetAll(int index, int size)
+        {
+            var reports = await _reportRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, r => r.Content, null);
+            var reportDtos = new List<ResReport>();
+            foreach(var report in reports)
+            {
+                var reportDto = _mapper.Map<ResReport>(report);
+                var sender = await _userInformationRepo.GetOne(report.SenderId);
+                var receiver = await _userInformationRepo.GetOne(report.ReceiverId);
+                if(report.PostId != null)
+                {
+                    var post = await _postRepo.GetOne(report.PostId);
+                    reportDto.PostType = post.Type; reportDto.PostType = post.Type;
+                }
+                reportDto.SenderName = sender.Name;
+                reportDto.SenderAvatar = sender.Avatar;
+                reportDto.ReceiverName = receiver.Name;
+                reportDto.ReceiverAvatar = receiver.Avatar;
+                reportDtos.Add(reportDto);
+            }
+            return reportDtos;
         }
     }
 }

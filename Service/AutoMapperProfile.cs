@@ -85,6 +85,8 @@ namespace Service
                 .ForMember(dest => dest.CreatorAvatar, opt => opt.MapFrom(src => src.Avatar))
                 .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Name));
             CreateMap<Conversation, ConversationItemDto>();
+
+            CreateMap<Report, ResReport>();
         }
     }
 }
