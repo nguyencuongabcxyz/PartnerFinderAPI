@@ -87,6 +87,7 @@ namespace Service
             CreateMap<Conversation, ConversationItemDto>();
 
             CreateMap<Report, ResReport>();
+            CreateMap<UserInformation, AdminUserDto>();
         }
     }
 }

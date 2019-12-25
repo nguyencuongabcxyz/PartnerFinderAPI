@@ -25,6 +25,7 @@ namespace Data.Models
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public ApplicationUser User { get; set; }
+        public bool IsBlocked { get; set; }
     }
 
     public enum UserLevel

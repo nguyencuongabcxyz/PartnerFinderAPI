@@ -10,7 +10,7 @@ namespace Service.Services
     public interface IAuthService
     {
         Task<object> RegisterUserAsUserRole(UserDto userDto);
-        Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password);
+        Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password, bool isBlocked);
         Task<object> AddRole(string roleName);
     }
     public class AuthService : IAuthService
@@ -48,14 +48,14 @@ namespace Service.Services
             return result;
         }
 
-        public async Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password)
+        public async Task<AuthenticateUserResult> AuthenticateUser(ApplicationUser user, string password, bool isBlocked)
         {
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
                 return AuthenticateUserResult.Invalid;
             }
 
-            if (user.IsBlocked)
+            if (isBlocked)
             {
                 return AuthenticateUserResult.Blocked;
             }

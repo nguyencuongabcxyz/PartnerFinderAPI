@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Models;
 using Data.Repositories;
+using Service.Extensions;
 using Service.Models;
 
 namespace Service.Services
@@ -23,23 +24,32 @@ namespace Service.Services
         Task<UserInfoDto> UpdateMediaProfile(string id, MediaProfileDto mediaProfile);
         Task<IEnumerable<PartnerFinderDto>> GetPartnerFinders(string userId, string location, UserLevel level, int index, int size);
         Task<int> CountPartnerFinders(string userId, string location, UserLevel level);
+        Task<IEnumerable<AdminUserDto>> GetAdminUsers(string userId, int index, int size);
+        Task<IEnumerable<AdminUserDto>> SearchAdminUsers(string userId, string pattern);
+        Task<AdminUserDto> ActiveUser(string userId);
+        Task<AdminUserDto> BlockUser(string userId);
+        AdminUserDto MapUserToAdminUser(UserInformation user);
+        Task<int> CountAdminUsers(string userId);
     }
     public class UserInformationService : IUserInformationService
     {
         private readonly IUserInformationRepository _userInformationRepo;
         private readonly IPartnerRequestRepository _partnerRequestRepo;
         private readonly IPartnershipRepository _partnershipRepo;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public UserInformationService(IUserInformationRepository userInformationRepo, 
             IMapper mapper, 
             IPartnerRequestRepository partnerRequestRepo, 
-            IPartnershipRepository partnershipRepo)
+            IPartnershipRepository partnershipRepo,
+            IUnitOfWork unitOfWork)
         {
             _userInformationRepo = userInformationRepo;
             _partnerRequestRepo = partnerRequestRepo;
             _partnershipRepo = partnershipRepo;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task AddWithEmptyInfo(string id, string name)
@@ -180,6 +190,8 @@ namespace Service.Services
             return await MapUserInfosToPartnerFinders(returnUsers, userId);
         }
 
+
+
         public async Task<int> CountPartnerFinders(string userId, string location, UserLevel level)
         {
             Expression<Func<UserInformation, bool>> condition;
@@ -211,6 +223,57 @@ namespace Service.Services
                 }
             }
             return userList.Count;
+        }
+
+        public AdminUserDto MapUserToAdminUser(UserInformation user)
+        {
+            return _mapper.Map<AdminUserDto>(user);
+        }
+
+        public async Task<IEnumerable<AdminUserDto>> GetAdminUsers(string userId, int index, int size)
+        {
+            var users = await _userInformationRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, u => u.UpdatedDate, u => u.UserId != userId);
+            var adminUsers = new List<AdminUserDto>();
+            foreach(var user in users)
+            {
+                var adminUser = MapUserToAdminUser(user);
+                adminUsers.Add(adminUser);
+            }
+            return adminUsers;
+        }
+
+        public async Task<IEnumerable<AdminUserDto>> SearchAdminUsers(string userId, string pattern)
+        {
+            var users = await _userInformationRepo.GetManyByCondition(u => u.Name.CaseInsensitiveContains(pattern) && u.UserId != userId);
+            var adminUsers = new List<AdminUserDto>();
+            foreach (var user in users)
+            {
+                var adminUser = MapUserToAdminUser(user);
+                adminUsers.Add(adminUser);
+            }
+            return adminUsers;
+        }
+
+        public async Task<AdminUserDto> ActiveUser(string userId)
+        {
+            var user = await _userInformationRepo.GetOne(userId);
+            user.IsBlocked = false;
+            await _unitOfWork.Commit();
+            return MapUserToAdminUser(user);
+        }
+
+        public async Task<AdminUserDto> BlockUser(string userId)
+        {
+            var user = await _userInformationRepo.GetOne(userId);
+            user.IsBlocked = true;
+            await _unitOfWork.Commit();
+            return MapUserToAdminUser(user);
+        }
+
+        public async Task<int> CountAdminUsers(string userId)
+        {
+            var users = await _userInformationRepo.GetManyByCondition(u => u.UserId != userId);
+            return users.Count();
         }
     }
 }

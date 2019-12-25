@@ -69,6 +69,7 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> GetQuestionPost(int id)
         {
             var questionPostDetail = await _postService.GetQuestionPost(id);
+            if (questionPostDetail == null) return NotFound();
             return Ok(questionPostDetail);
         }
 
@@ -84,6 +85,7 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> GetFeedbackPost(int id)
         {
             var feedbackPostDetail = await _postService.GetFeedbackPost(id);
+            if (feedbackPostDetail == null) return NotFound();
             return Ok(feedbackPostDetail);
         }
 
@@ -137,6 +139,14 @@ namespace PartnerFinder.Controllers
             }
             var questionPosts = await _postService.SearchQuestionPosts(pattern);
             return Ok(questionPosts);
+        }
+
+        [HttpPut("{id}/close")]
+        public async Task<IActionResult> ClosePost(int id)
+        {
+            await _postService.ClosePost(id);
+            await _unitOfWork.Commit();
+            return Ok(new { result = true });
         }
     }
 }

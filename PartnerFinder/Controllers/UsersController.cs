@@ -82,5 +82,39 @@ namespace PartnerFinder.Controllers
             return Ok(updatedUserInfoDto);
         }
 
+        //Admin API
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetAdminUsers(int index, int size)
+        {
+            var userId = GetUserId();
+            var users = await _userInformationService.GetAdminUsers(userId, index, size);
+            var count = await _userInformationService.CountAdminUsers(userId);
+            return Ok(new { users, count });
+        }
+
+        //Admin API
+        [HttpGet("admin/search")]
+        public async Task<IActionResult> SearchAdminUsers(string pattern)
+        {
+            var userId = GetUserId();
+            var users = await _userInformationService.SearchAdminUsers(userId, pattern);
+            return Ok(users);
+        }
+
+        //Admin API
+        [HttpPut("block")]
+        public async Task<IActionResult> BlockUser(string userId)
+        {
+            var user = await _userInformationService.BlockUser(userId);
+            return Ok(user);
+        }
+
+        //Admin API
+        [HttpPut("active")]
+        public async Task<IActionResult> ActiveUser(string userId)
+        {
+            var user = await _userInformationService.ActiveUser(userId);
+            return Ok(user);
+        }
     }
 }

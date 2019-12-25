@@ -31,6 +31,7 @@ namespace Service.Services
         Task<IEnumerable<QuestionPostDetailDto>> SearchQuestionPosts(string pattern);
         Task<Post> SwitchPostVote(int postId, string userId, PostReactionType type);
         Task<bool> CheckIfUserVoted(int postId, string userId);
+        Task ClosePost(int id);
     }
     public class PostService : IPostService
     {
@@ -53,20 +54,20 @@ namespace Service.Services
 
         public async Task<int> CountQuestionPosts()
         {
-            return await _postRepo.Count(p => p.IsDeleted != true 
+            return await _postRepo.Count(p => p.IsClosed != true 
                                               && p.Type == PostType.Question);
         }
 
         public async Task<int> CountFeedbackPosts()
         {
-            Expression<Func<Post, bool>> condition = p => p.IsDeleted != true 
+            Expression<Func<Post, bool>> condition = p => p.IsClosed != true 
                                                           && (p.Type == PostType.SpokenFeedback || p.Type == PostType.WrittenFeedback);
             return await _postRepo.Count(condition);
         }
 
         public async Task<IEnumerable<DashboardPostDto>> GetFeedbackPostsForDashboard(int index, int size = 8)
         {
-            Expression<Func<Post, bool>> condition = p => p.IsDeleted != true 
+            Expression<Func<Post, bool>> condition = p => p.IsClosed != true 
                                                           && (p.Type == PostType.WrittenFeedback || p.Type == PostType.SpokenFeedback);
             var posts = await _postRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, p => p.UpdatedDate,
                 condition);
@@ -75,7 +76,7 @@ namespace Service.Services
 
         public async Task<IEnumerable<DashboardPostDto>> GetQuestionPostsForDashboard(int index, int size = 8)
         {
-            Expression<Func<Post, bool>> condition = p => p.IsDeleted != true && p.Type == PostType.Question;
+            Expression<Func<Post, bool>> condition = p => p.IsClosed != true && p.Type == PostType.Question;
             var posts = await _postRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, p => p.UpdatedDate,
                 condition);
             return await MapPostsToDashboardPosts(posts);
@@ -159,13 +160,15 @@ namespace Service.Services
 
         public async Task<QuestionPostDetailDto> GetQuestionPost(int id)
         {
-            var post = await _postRepo.GetOne(id);
+            var post = await _postRepo.GetOneByCondition(p => p.Id == id && p.IsClosed != true);
+            if (post == null) return null;
             return await MapPostToQuestionPostDetail(post);
         }
 
         public async Task<FeedbackPostDetailDto> GetFeedbackPost(int id)
         {
-            var post = await _postRepo.GetOne(id);
+            var post = await _postRepo.GetOneByCondition(p => p.Id == id && p.IsClosed != true);
+            if (post == null) return null;
             return await MapPostToFeedbackPostDetail(post);
         }
 
@@ -173,7 +176,7 @@ namespace Service.Services
         {
             if (pattern == null) return null;
             var arrayPattern = pattern.Split(" ");
-            var posts = await _postRepo.GetManyByCondition(p => p.IsDeleted != true
+            var posts = await _postRepo.GetManyByCondition(p => p.IsClosed != true
                                                                 && (p.Type == PostType.SpokenFeedback ||
                                                                     p.Type == PostType.WrittenFeedback)
                                                                 && arrayPattern.All(s => p.Title.CaseInsensitiveContains(s)), CommonConstant.SearchLimit);
@@ -183,7 +186,7 @@ namespace Service.Services
         public async Task<IEnumerable<QuestionPostDetailDto>> SearchQuestionPosts(string pattern)
         {
             var arrayPattern = pattern.Split(" ");
-            var posts = await _postRepo.GetManyByCondition(p => p.IsDeleted != true
+            var posts = await _postRepo.GetManyByCondition(p => p.IsClosed != true
                                                                 && (p.Type == PostType.Question)
                                                                 && arrayPattern.All(s => p.Title.CaseInsensitiveContains(s)), CommonConstant.SearchLimit);
             return await MapPostsToQuestionPostsDetail(posts);
@@ -206,7 +209,13 @@ namespace Service.Services
 
         public async Task<Post> GetOne(int id)
         {
-            return await _postRepo.GetOne(id);
+            return await _postRepo.GetOneByCondition( p => p.Id == id && p.IsClosed != true);
+        }
+
+        public async Task ClosePost(int id)
+        {
+            var post = await _postRepo.GetOne(id);
+            post.IsClosed = true;
         }
     }
 }

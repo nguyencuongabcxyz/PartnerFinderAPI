@@ -15,6 +15,7 @@ namespace PartnerFinder.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
+        private readonly IUserInformationService _userInformationService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationSetting _appSetting;
 
@@ -22,12 +23,14 @@ namespace PartnerFinder.Controllers
             IAuthService authService, 
             ITokenService tokenService, 
             UserManager<ApplicationUser> userManager, 
-            IOptions<ApplicationSetting> appSetting)
+            IOptions<ApplicationSetting> appSetting,
+            IUserInformationService userInformationService)
         {
             _authService = authService;
             _tokenService = tokenService;
             _userManager = userManager;
             _appSetting = appSetting.Value;
+            _userInformationService = userInformationService;
         }
 
         [HttpPost("CreateRole/{role}")]
@@ -48,7 +51,8 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> Login(LoginInfoDto loginInfoDto)
         {
             var user = await _userManager.FindByNameAsync(loginInfoDto.UserName);
-            var result = await _authService.AuthenticateUser(user, loginInfoDto.Password);
+            var userInfo = await _userInformationService.GetOne(user.Id);
+            var result = await _authService.AuthenticateUser(user, loginInfoDto.Password, userInfo.IsBlocked);
             switch (result)
             {
                 case AuthenticateUserResult.Invalid:

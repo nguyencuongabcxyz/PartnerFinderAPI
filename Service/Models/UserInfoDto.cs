@@ -20,5 +20,6 @@ namespace Service.Models
         public string EnglishSkill { get; set; }
         public string LearningSkill { get; set; }
         public string Expectation { get; set; }
+        public bool IsBlocked { get; set; }
     }
 }
