@@ -3,6 +3,7 @@ using Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Service;
 using Service.Constants;
 using Service.Models;
 using Service.Services;
@@ -16,6 +17,7 @@ namespace PartnerFinder.Controllers
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
         private readonly IUserInformationService _userInformationService;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationSetting _appSetting;
 
@@ -24,13 +26,15 @@ namespace PartnerFinder.Controllers
             ITokenService tokenService, 
             UserManager<ApplicationUser> userManager, 
             IOptions<ApplicationSetting> appSetting,
-            IUserInformationService userInformationService)
+            IUserInformationService userInformationService,
+            IUnitOfWork unitOfWork)
         {
             _authService = authService;
             _tokenService = tokenService;
             _userManager = userManager;
             _appSetting = appSetting.Value;
             _userInformationService = userInformationService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost("CreateRole/{role}")]
@@ -51,6 +55,12 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> Login(LoginInfoDto loginInfoDto)
         {
             var user = await _userManager.FindByNameAsync(loginInfoDto.UserName);
+            var check = await _userInformationService.CheckInitializedInfo(user.Id);
+            if (!check)
+            {
+                await _userInformationService.AddWithEmptyInfo(user.Id, "");
+                await _unitOfWork.Commit();
+            }
             var userInfo = await _userInformationService.GetOne(user.Id);
             var result = await _authService.AuthenticateUser(user, loginInfoDto.Password, userInfo.IsBlocked);
             switch (result)

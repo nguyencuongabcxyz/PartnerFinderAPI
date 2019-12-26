@@ -83,6 +83,7 @@ namespace PartnerFinder.Controllers
         }
 
         //Admin API
+        [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdminUsers(int index, int size)
         {
@@ -93,6 +94,7 @@ namespace PartnerFinder.Controllers
         }
 
         //Admin API
+        [Authorize(Roles = "Admin")]
         [HttpGet("admin/search")]
         public async Task<IActionResult> SearchAdminUsers(string pattern)
         {
@@ -102,6 +104,7 @@ namespace PartnerFinder.Controllers
         }
 
         //Admin API
+        [Authorize(Roles = "Admin")]
         [HttpPut("block")]
         public async Task<IActionResult> BlockUser(string userId)
         {
@@ -110,6 +113,7 @@ namespace PartnerFinder.Controllers
         }
 
         //Admin API
+        [Authorize(Roles = "Admin")]
         [HttpPut("active")]
         public async Task<IActionResult> ActiveUser(string userId)
         {

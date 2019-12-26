@@ -41,7 +41,7 @@ namespace PartnerFinder.Controllers
             await _unitOfWork.Commit();
             return Ok(new { result = true });
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll(int index, int size)
         {
@@ -49,7 +49,7 @@ namespace PartnerFinder.Controllers
             var count = await _reportService.Count();
             return Ok(new { reports, count });
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOne(int id)
         {

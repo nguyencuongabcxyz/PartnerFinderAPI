@@ -73,7 +73,7 @@ namespace Service.Services
 
         public async Task<bool> CheckInitializedInfo(string id)
         {
-            var retrievedUserInfo = await _userInformationRepo.GetOne(id);
+            var retrievedUserInfo = await _userInformationRepo.GetOneByCondition(u => u.UserId == id);
             return retrievedUserInfo != null;
         }
 
