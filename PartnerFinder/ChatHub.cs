@@ -13,9 +13,11 @@ namespace PartnerFinder
     public class ChatHub : Hub
     {
         private readonly IMessageService _messageService;
+        private readonly IConversationService _conversationService;
         private readonly IUnitOfWork _unitOfWork;
-        public ChatHub(IMessageService messageService, IUnitOfWork unitOfWork)
+        public ChatHub(IMessageService messageService, IUnitOfWork unitOfWork, IConversationService conversationService)
         {
+            _conversationService = conversationService;
             _messageService = messageService;
             _unitOfWork = unitOfWork;
         }
@@ -23,6 +25,7 @@ namespace PartnerFinder
         {
             var userId = Context.User.Claims.First(c => c.Type == "userId").Value;
             await _messageService.AddOne(userId, to, message);
+            await _conversationService.UpdateStatus(userId, to);
             await _unitOfWork.Commit();
             await Clients.Groups(userId).SendAsync("sendChatMessage", message, userId);
             await Clients.Groups(to).SendAsync("sendChatMessage", message, userId);

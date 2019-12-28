@@ -55,6 +55,10 @@ namespace PartnerFinder.Controllers
         public async Task<IActionResult> Login(LoginInfoDto loginInfoDto)
         {
             var user = await _userManager.FindByNameAsync(loginInfoDto.UserName);
+            if(user == null)
+            {
+                return BadRequest(new { message = "Username or password is incorrect!" });
+            }
             var check = await _userInformationService.CheckInitializedInfo(user.Id);
             if (!check)
             {

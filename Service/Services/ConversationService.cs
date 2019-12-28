@@ -18,9 +18,12 @@ namespace Service.Services
         Task<bool> CheckExistence(string senderId, string receiverId);
         Task<List<int>> GetListIdConversation(string senderId, string receiverId);
         Task<Conversation> GetOneByCondition(string senderId, string receiverId);
+        Task MarkViewed(int id);
+        Task MarkNotViewed(int id);
         Task CreateOne(string ownerId, string creatorId);
         Task<int> Count(string userId);
-    }
+        Task UpdateStatus(string senderId, string receiverId)
+;    }
     public class ConversationService : IConversationService
     {
         private readonly IConversationRepository _conversationRepo;
@@ -132,6 +135,26 @@ namespace Service.Services
         public async Task<Conversation> GetOneByCondition(string senderId, string receiverId)
         {
             return await _conversationRepo.GetOneByCondition(c => c.OwnerId == senderId && c.CreatorId == receiverId);
+        }
+
+        public async Task MarkViewed(int id)
+        {
+            var conversation = await _conversationRepo.GetOne(id);
+            conversation.IsViewed = true;
+        }
+
+        public async Task MarkNotViewed(int id)
+        {
+            var conversation = await _conversationRepo.GetOne(id);
+            conversation.IsViewed = false;
+        }
+
+        public async Task UpdateStatus(string senderId, string receiverId)
+        {
+            var conversationOfSender = await _conversationRepo.GetOneByCondition(s => s.OwnerId == senderId && s.CreatorId == receiverId);
+            var conversationOfReceiver = await _conversationRepo.GetOneByCondition(s => s.OwnerId == receiverId && s.CreatorId == senderId);
+            conversationOfSender.IsViewed = true;
+            conversationOfReceiver.IsViewed = false;
         }
     }
 }

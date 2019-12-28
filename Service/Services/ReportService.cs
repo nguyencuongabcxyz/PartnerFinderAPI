@@ -48,7 +48,7 @@ namespace Service.Services
 
         public async Task<IEnumerable<ResReport>> GetAll(int index, int size)
         {
-            var reports = await _reportRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, r => r.Content, null);
+            var reports = await _reportRepo.OrderAndGetRange(index, size, OrderType.OrderByDescending, r => r.CreatedDate, null);
             var reportDtos = new List<ResReport>();
             foreach(var report in reports)
             {

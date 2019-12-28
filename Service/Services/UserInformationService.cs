@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Models;
 using Data.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Service.Constants;
 using Service.Extensions;
 using Service.Models;
 
@@ -37,17 +39,23 @@ namespace Service.Services
         private readonly IPartnerRequestRepository _partnerRequestRepo;
         private readonly IPartnershipRepository _partnershipRepo;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
 
         public UserInformationService(IUserInformationRepository userInformationRepo, 
             IMapper mapper, 
             IPartnerRequestRepository partnerRequestRepo, 
             IPartnershipRepository partnershipRepo,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork, 
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _userInformationRepo = userInformationRepo;
             _partnerRequestRepo = partnerRequestRepo;
             _partnershipRepo = partnershipRepo;
+            _userManager = userManager;
+            _roleManager = roleManager;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
@@ -256,6 +264,9 @@ namespace Service.Services
 
         public async Task<AdminUserDto> ActiveUser(string userId)
         {
+            var userAccount = await _userManager.FindByIdAsync(userId);
+            await _userManager.RemoveFromRoleAsync(userAccount, AuthenticationConstant.BlockRole);
+            await _userManager.AddToRoleAsync(userAccount, AuthenticationConstant.UserRole);
             var user = await _userInformationRepo.GetOne(userId);
             user.IsBlocked = false;
             await _unitOfWork.Commit();
@@ -264,6 +275,9 @@ namespace Service.Services
 
         public async Task<AdminUserDto> BlockUser(string userId)
         {
+            var userAccount = await _userManager.FindByIdAsync(userId);
+            await _userManager.RemoveFromRoleAsync(userAccount, AuthenticationConstant.UserRole);
+            await _userManager.AddToRoleAsync(userAccount, AuthenticationConstant.BlockRole);
             var user = await _userInformationRepo.GetOne(userId);
             user.IsBlocked = true;
             await _unitOfWork.Commit();
